@@ -1,7 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 <modelVersion>4.0.0</modelVersion>
-<groupId>gl</groupId>
-<artifactId>projet</artifactId>
+<artifactId>gl</artifactId>
 <version>0.0.1-SNAPSHOT</version>
 <name>Projet Borne</name>
 <description>Génie Logiciel - Projet Bornes</description>
@@ -9,7 +8,7 @@
 <properties>
     <project.build.sourceEncoding>UTF8</project.build.sourceEncoding>
     <project.bindist.dir>${project.basedir}/bindist</project.bindist.dir>
-    <project.main.classname>${project.groupId}.${project.artifactId}.Launcher</project.main.classname>
+    <project.main.classname>${project.artifactId}.Launcher</project.main.classname>
     <project.bin.appname>run</project.bin.appname>
 </properties>
 
