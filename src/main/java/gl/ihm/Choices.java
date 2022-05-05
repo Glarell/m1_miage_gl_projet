@@ -1,6 +1,12 @@
 package gl.ihm;
 
 import gl.application.Application;
+import gl.commands.*;
+import gl.commands.anonymous.InscriptionChoice;
+import gl.commands.client.*;
+import gl.commands.manager.ConsultAllProfilesChoice;
+import gl.commands.manager.DelayChoice;
+import gl.commands.manager.PriceChoice;
 
 import java.util.HashMap;
 
@@ -20,10 +26,41 @@ public class Choices{
         choicesAnonymous.put(3, "3 - Quitter l'application");
         commandsAnonymous.put(1, new InscriptionChoice());
         commandsAnonymous.put(2, new ConnexionChoice());
+        commandsAnonymous.put(3, new QuitChoice());
         choicesConnected = new HashMap<>();
-        choicesManager = new HashMap<>();
         commandsConnected = new HashMap<>();
+        choicesConnected.put(1, "1 - Vérifier la disponibilité des bornes");
+        choicesConnected.put(2, "2 - Renseigner ma plaque d'immatriculation");
+        choicesConnected.put(3, "3 - Modifier/Supprimer ma réservation");
+        choicesConnected.put(4, "4 - Prolonger ma réservation");
+        choicesConnected.put(5, "5 - Recharger sans réservations");
+        choicesConnected.put(6, "6 - Fusionner plusieurs réservations");
+        choicesConnected.put(7, "7 - Conclure un contrat mensuel");
+        choicesConnected.put(8, "8 - Consulter mon profil");
+        choicesConnected.put(9, "9 - Me déconnecter");
+        choicesConnected.put(10, "10 - Quitter l'application");
+        commandsConnected.put(1, new VerifDispoChoice());
+        commandsConnected.put(2, new AddImmatChoice());
+        commandsConnected.put(3, new ModifReservationChoice());
+        commandsConnected.put(4, new ProlongerReservationChoice());
+        commandsConnected.put(5, new WithoutReservationChoice());
+        commandsConnected.put(6, new MergeReservationChoice());
+        commandsConnected.put(7, new CreateContractChoice());
+        commandsConnected.put(8, new ConsultProfileChoice());
+        commandsConnected.put(9, new DeconnectionChoice());
+        commandsConnected.put(10, new QuitChoice());
+        choicesManager = new HashMap<>();
         commandsManager = new HashMap<>();
+        choicesManager.put(1, "1 - Définir le délai d'attente");
+        choicesManager.put(2, "2 - Définir le montant des frais supplémentaires");
+        choicesManager.put(3, "3 - Consulter les profils des clients");
+        choicesManager.put(4, "4 - Me déconnecter");
+        choicesManager.put(5, "5 - Quitter l'application");
+        commandsManager.put(1, new DelayChoice());
+        commandsManager.put(2, new PriceChoice());
+        commandsManager.put(3, new ConsultAllProfilesChoice());
+        commandsManager.put(4, new DeconnectionChoice());
+        commandsManager.put(5, new QuitChoice());
     }
 
     public void display(int state){
