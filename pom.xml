@@ -1,41 +1,123 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-<modelVersion>4.0.0</modelVersion>
-<artifactId>gl</artifactId>
-<version>0.0.1-SNAPSHOT</version>
-<name>Projet Borne</name>
-<description>Génie Logiciel - Projet Bornes</description>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>gl</groupId>
+    <artifactId>gl</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>Projet Borne</name>
+    <description>Génie Logiciel - Projet Bornes</description>
+    <packaging>jar</packaging>
+    <properties>
+        <project.build.sourceEncoding>UTF8</project.build.sourceEncoding>
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <assertj.version>3.22.0</assertj.version>
+        <junit.version>5.8.2</junit.version>
+        <mockito.version>4.4.0</mockito.version>
+        <jacoco.version>0.8.7</jacoco.version>
+        <project.bindist.dir>${project.basedir}/bindist</project.bindist.dir>
+        <project.main.classname>${project.artifactId}.Launcher</project.main.classname>
+        <project.bin.appname>run</project.bin.appname>
+    </properties>
 
-<properties>
-    <project.build.sourceEncoding>UTF8</project.build.sourceEncoding>
-    <project.bindist.dir>${project.basedir}/bindist</project.bindist.dir>
-    <project.main.classname>${project.artifactId}.Launcher</project.main.classname>
-    <project.bin.appname>run</project.bin.appname>
-</properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <release>11</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>1.10</version>
+                <configuration>
+                    <assembleDirectory>${project.bindist.dir}</assembleDirectory>
+                    <programs>
+                        <program>
+                            <mainClass>${project.main.classname}</mainClass>
+                            <id>${project.bin.appname}</id>
+                        </program>
+                    </programs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <configuration>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>pre-unit-test</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>PACKAGE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.7</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.0</version>
-            <configuration>
-                <release>11</release>
-            </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>appassembler-maven-plugin</artifactId>
-            <version>1.10</version>
-            <configuration>
-                <assembleDirectory>${project.bindist.dir}</assembleDirectory>
-                <programs>
-                    <program>
-                        <mainClass>${project.main.classname}</mainClass>
-                        <id>${project.bin.appname}</id>
-                    </program>
-                </programs>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
+    <dependencies>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
