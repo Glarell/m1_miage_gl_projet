@@ -1,6 +1,7 @@
 package gl.commands;
 
 import gl.application.Application;
+import gl.application.User;
 
 import java.util.Scanner;
 
@@ -11,7 +12,7 @@ public class QuitChoice extends ChoicesAbstract{
     }
 
     @Override
-    public int execute(Scanner scanner){
+    public int execute(Scanner scanner, User user){
         System.out.println("Arrêt de l'application \n");
         return Application.RETURN_QUIT;
     }

@@ -14,22 +14,22 @@ public class Application {
     public final static int RETURN_SUCCESS = 0;
     public final static int RETURN_FAILED = 1;
     public final static int RETURN_QUIT = 2;
-    private Logger logger = Logger.getLogger(Application.class.getName());
-    private Scanner scanner;
-    private Choices choices = new Choices();
-    private int state;
+    private final Logger logger = Logger.getLogger(Application.class.getName());
+    private final Scanner scanner;
+    private final Choices choices = new Choices();
+    private final User currentUser;
 
     public Application() {
         this.scanner = new Scanner(System.in);
-        this.state = STATE_ANONYMOUS;
+        this.currentUser = new User(STATE_ANONYMOUS);
     }
 
     public void start() {
         String asking = "Veuillez saisir le numéro de l'action que vous souhaitez effectuer : ";
-        int line = 0;
+        int line;
         int condition = RETURN_SUCCESS;
         while (condition != RETURN_QUIT) {
-            switch (this.state) {
+            switch (this.currentUser.getState()) {
                 case (Application.STATE_ANONYMOUS):
                     choices.display(STATE_ANONYMOUS);
                     line = askForIntegerLine(asking);
@@ -58,8 +58,7 @@ public class Application {
         System.out.println(param);
         while (true) {
             try {
-                int res = Integer.parseInt(scanner.nextLine());
-                return res;
+                return Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
                 System.out.println("Veuillez saisir un entier !");
             }
@@ -67,9 +66,9 @@ public class Application {
     }
 
     public int parseOptions(int line) {
-        ChoicesAbstract choice = this.choices.getFunction(line, state);
+        ChoicesAbstract choice = this.choices.getFunction(line, currentUser.getState());
         if (choice != null) {
-            return choice.execute(scanner);
+            return choice.execute(scanner, currentUser);
         }else{
             System.out.println("Aucune option trouvée, veuillez réésayez svp");
             return RETURN_FAILED;
