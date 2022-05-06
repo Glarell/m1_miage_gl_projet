@@ -1,0 +1,70 @@
+@startuml
+class Client {
+Int id_client
+String nom
+String prenom
+String adresse
+Int telephone
+String mail
+String mdp
+Int carte
+}
+
+class Notification {
+Int id_notification
+String contenu
+}
+
+class TypeNotification {
+String id_typeNotification
+}
+
+class Transaction {
+Int id_transaction
+String contenu
+Date date_transaction
+}
+
+class EstAssocie {
+Bool isTemporaire
+}
+
+class Reservation {
+Int id_reservation
+Date date_reservation
+Time debut_intervalle
+Time fin_intervalle
+int nb_prolongement
+Bool isSupplement
+}
+
+class Abonnement {
+Int id_abonnement
+Date date_abonnement
+Time debut_intervalle
+Time fin_intervalle
+}
+
+class Plaque {
+String id_plaque
+}
+
+class Borne {
+String id_borne
+}
+
+class EtatBorne {
+String id_etatBorne
+}
+
+Client "1" -- "*" EstAssocie
+EstAssocie "*" -- "1" Plaque
+Client "1" -- "*" Abonnement
+Abonnement "*" -- "1" Borne
+EstAssocie "1" -- "*" Reservation
+Borne "1" -- "*" Reservation
+EtatBorne "1" -- "*" Borne
+Client "1" -- "*" Notification
+Notification "*" -- "1" TypeNotification
+Client "1" -- "*" Transaction
+@enduml
