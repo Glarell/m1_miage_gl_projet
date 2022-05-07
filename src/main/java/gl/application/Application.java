@@ -15,12 +15,12 @@ public class Application {
     public final static int RETURN_FAILED = 1;
     public final static int RETURN_QUIT = 2;
     private final Logger logger = Logger.getLogger(Application.class.getName());
-    private final Scanner scanner;
+    private static Scanner scanner;
     private final Choices choices = new Choices();
     private final User currentUser;
 
     public Application() {
-        this.scanner = new Scanner(System.in);
+        scanner = new Scanner(System.in);
         this.currentUser = new User(STATE_ANONYMOUS);
     }
 
@@ -49,12 +49,12 @@ public class Application {
         }
     }
 
-    public String askForLine(String param) {
+    public static String askForLine(String param) {
         System.out.println(param);
         return scanner.nextLine();
     }
 
-    public int askForIntegerLine(String param) {
+    public static int askForIntegerLine(String param) {
         System.out.println(param);
         while (true) {
             try {
