@@ -19,7 +19,7 @@ public class TestConnection {
     }
 
     @Test
-    public void connectionfailed() throws SQLException {
+    public void connectionfailed() {
         Client client = ClientDAO.getClientByEmailPwd("test@test.fr", "mdp");
         assertThat(client.isNotReal());
     }

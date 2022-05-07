@@ -36,15 +36,15 @@ public class InscriptionChoice extends ChoicesAbstract {
         }
         String email = Application.askForLine("Saisir email :");
         while (!email.matches(".+@.+\\..+") || ClientDAO.isEmailAlreadyExist(email)) {
-            email = Application.askForLine("Mauvaise saisie !\nSaisir email :");
+            email = Application.askForLine("Mauvaise saisie ou email déjà enregistré !\nSaisir email :");
         }
         String password = Application.askForLine("Saisir mot de passe :");
         while (password.isEmpty()) {
             password = Application.askForLine("Mauvaise saisie !\nSaisir mot de passe :");
         }
-        String card = Application.askForLine("Saisir numéro carte bancaire :");
+        String card = Application.askForLine("Saisir numéro carte bancaire (16 chiffres) :");
         while (!card.matches("\\d{16}")) {
-            card = Application.askForLine("Mauvaise saisie !\nSaisir numéro carte bancaire :");
+            card = Application.askForLine("Mauvaise saisie !\nSaisir numéro carte bancaire (16 chiffres) :");
         }
         // enregistrement du client
         Client client = new Client(lastname,firstname,address,tel,email,password,card);
