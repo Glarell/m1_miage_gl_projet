@@ -4,10 +4,10 @@ Int id_client
 String nom
 String prenom
 String adresse
-Int telephone
+String telephone
 String mail
 String mdp
-Int carte
+String carte
 }
 
 class Notification {

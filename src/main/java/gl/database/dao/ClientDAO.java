@@ -4,10 +4,7 @@ import gl.database.ConnectionPostgre;
 import gl.database.model.Client;
 import gl.database.model.EtatBorne;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +24,15 @@ public class ClientDAO {
 
     public static Client registrerClient(Client client) throws SQLException {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
-        Statement stmt = conn.createStatement();
-        stmt.executeUpdate("INSERT INTO Client (nom,prenom,adresse,telephone,email,mdp,carte)" + "VALUES ("+client.toString()+")");
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO Client (nom,prenom,adresse,telephone,email,mdp,carte) VALUES (?,?,?,?,?,?,?)");
+        stmt.setString(1,client.getNom());
+        stmt.setString(2,client.getPrenom());
+        stmt.setString(3,client.getAdresse());
+        stmt.setString(4,client.getTelephone());
+        stmt.setString(5,client.getEmail());
+        stmt.setString(6,client.getMdp());
+        stmt.setString(7,client.getCarte());
+        stmt.executeUpdate();
         return client;
     }
 
