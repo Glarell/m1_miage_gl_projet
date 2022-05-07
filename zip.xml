@@ -22,10 +22,10 @@
 			<directory>${project.basedir}/samples</directory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
-		<fileSet>
-			<directory>${project.basedir}/mkdocs</directory>
-			<useDefaultExcludes>true</useDefaultExcludes>
-		</fileSet>
+<!--		<fileSet>-->
+<!--			<directory>${project.basedir}/mkdocs</directory>-->
+<!--			<useDefaultExcludes>true</useDefaultExcludes>-->
+<!--		</fileSet>-->
 		<fileSet>
 			<directory>${project.basedir}/bindist</directory>
 			<useDefaultExcludes>true</useDefaultExcludes>
