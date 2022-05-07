@@ -1,14 +1,13 @@
 CREATE TABLE Client
 (
-    id_client SERIAL
-        CONSTRAINT PK_client PRIMARY KEY,
+    id_client SERIAL CONSTRAINT PK_client PRIMARY KEY,
     nom       VARCHAR(50) NOT NULL,
     prenom    VARCHAR(50) NOT NULL,
     adresse   VARCHAR(50) NOT NULL,
-    telephone NUMERIC(10) NOT NULL,
+    telephone VARCHAR(10) NOT NULL,
     email     VARCHAR(50) NOT NULL,
     mdp       VARCHAR(50) NOT NULL,
-    carte     NUMERIC(16) NOT NULL,
+    carte     VARCHAR(16) NOT NULL,
     CONSTRAINT Unique_Client UNIQUE (email)
 );
 
