@@ -122,7 +122,7 @@ public class EstAssocieDAO {
     }
 
     /**
-     * Association des résultats d'une requête une association client - plaque
+     * Association des résultats d'une requête à une association client - plaque
      *
      * @param res        la requête contenant les données
      * @param estAssocie l'association client - plaque
