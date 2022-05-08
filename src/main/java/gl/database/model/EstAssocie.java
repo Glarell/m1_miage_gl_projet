@@ -10,9 +10,7 @@ public class EstAssocie {
     public EstAssocie() {
     }
 
-    public EstAssocie(int id_estAssocie, boolean isTemporaire, int id_client, String id_plaque) {
-        this.id_estAssocie = id_estAssocie;
-        this.isTemporaire = isTemporaire;
+    public EstAssocie(int id_client, String id_plaque) {
         this.id_client = id_client;
         this.id_plaque = id_plaque;
     }
