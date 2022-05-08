@@ -56,7 +56,7 @@ public class BorneDAO {
     }
 
     /**
-     * Insertion d'une plaque d'immatriculation dans la BDD
+     * Mise à jour de l'état d'une borne dans la BDD
      *
      * @param borne        la borne à modifier
      * @param id_etatBorne le nouvel état de la borne
