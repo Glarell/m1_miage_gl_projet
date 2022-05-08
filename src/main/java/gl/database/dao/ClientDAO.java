@@ -2,7 +2,6 @@ package gl.database.dao;
 
 import gl.database.ConnectionPostgre;
 import gl.database.model.Client;
-import gl.database.model.EtatBorne;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,11 +9,11 @@ import java.util.List;
 
 public class ClientDAO {
 
-    public static boolean isEmailAlreadyExist(String email){
+    public static boolean isEmailAlreadyExist(String email) {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         try {
             Statement stmt = conn.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT * FROM Client where email = '"+email+"'");
+            ResultSet res = stmt.executeQuery("SELECT * FROM Client where email = '" + email + "'");
             return res.next();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -25,15 +24,36 @@ public class ClientDAO {
     public static Client registrerClient(Client client) throws SQLException {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO Client (nom,prenom,adresse,telephone,email,mdp,carte) VALUES (?,?,?,?,?,?,?)");
-        stmt.setString(1,client.getNom());
-        stmt.setString(2,client.getPrenom());
-        stmt.setString(3,client.getAdresse());
-        stmt.setString(4,client.getTelephone());
-        stmt.setString(5,client.getEmail());
-        stmt.setString(6,client.getMdp());
-        stmt.setString(7,client.getCarte());
+        getClientAttributes(stmt, client);
         stmt.executeUpdate();
         return client;
+    }
+
+    /**
+     * Création d'un nouveau client dans la BDD avec un id spécifique
+     *
+     * @param client le nouveau client
+     * @throws SQLException renvoie une exception
+     */
+    public static void registrerClientWithId(Client client) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO Client (nom,prenom,adresse,telephone,email,mdp,carte,id_client) VALUES (?,?,?,?,?,?,?,?)");
+        getClientAttributes(stmt, client);
+        stmt.setInt(8, client.getId_client());
+        stmt.executeUpdate();
+    }
+
+    /**
+     * Suppression d'un client de la BDD
+     *
+     * @param id_client l'id du client à supprimer
+     * @throws SQLException renvoie une exception
+     */
+    public static void deleteClient(int id_client) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM Client WHERE id_client = ?");
+        stmt.setInt(1, id_client);
+        stmt.executeUpdate();
     }
 
     public static Client getClientByEmailPwd(String email, String password) {
@@ -41,7 +61,7 @@ public class ClientDAO {
         Client client = new Client();
         try {
             Statement stmt = conn.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT * FROM Client where email = '"+email+"' AND mdp = '"+password+"'");
+            ResultSet res = stmt.executeQuery("SELECT * FROM Client where email = '" + email + "' AND mdp = '" + password + "'");
             while (res.next()) {
                 setClientAttributes(res, client);
             }
@@ -77,5 +97,22 @@ public class ClientDAO {
         client.setEmail(res.getString(6));
         client.setMdp(res.getString(7));
         client.setCarte(res.getString(8));
+    }
+
+    /**
+     * Affectation des données dans la requête
+     *
+     * @param stmt   la requête
+     * @param client le client
+     * @throws SQLException renvoie une exception
+     */
+    private static void getClientAttributes(PreparedStatement stmt, Client client) throws SQLException {
+        stmt.setString(1, client.getNom());
+        stmt.setString(2, client.getPrenom());
+        stmt.setString(3, client.getAdresse());
+        stmt.setString(4, client.getTelephone());
+        stmt.setString(5, client.getEmail());
+        stmt.setString(6, client.getMdp());
+        stmt.setString(7, client.getCarte());
     }
 }
