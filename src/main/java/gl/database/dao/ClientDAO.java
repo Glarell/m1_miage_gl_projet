@@ -12,8 +12,9 @@ public class ClientDAO {
     public static boolean isEmailAlreadyExist(String email) {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         try {
-            Statement stmt = conn.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT * FROM Client where email = '" + email + "'");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Client where email = ?");
+            stmt.setString(1,email);
+            ResultSet res = stmt.executeQuery();
             return res.next();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -60,9 +61,26 @@ public class ClientDAO {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         Client client = new Client();
         try {
-            Statement stmt = conn.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT * FROM Client where email = '" + email + "' AND mdp = '" + password + "'");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Client where email=? AND mdp=?");
+            stmt.setString(1,email);
+            stmt.setString(2,password);
+            ResultSet res = stmt.executeQuery();
             while (res.next()) {
+                setClientAttributes(res, client);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return client;
+    }
+
+    public static Client getClient(Client client) {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Client where id_client=?");
+            stmt.setInt(1,client.getId_client());
+            ResultSet res = stmt.executeQuery();
+            if (res.next()) {
                 setClientAttributes(res, client);
             }
         } catch (SQLException e) {

@@ -93,6 +93,13 @@ public class Client {
 
     @Override
     public String toString() {
-        return String.format("'%s', '%s', '%s', '%s', '%s', '%s', '%s'",nom,prenom,adresse,telephone,email,mdp,carte);
+        return String.format("Nom: %s\n" +
+                "Prénom: %s\n" +
+                "Adresse: %s\n" +
+                "Téléphone: %s\n" +
+                "Email: %s\n" +
+                "Mot de passe: %s\n" +
+                "Carte CB: %s\n"
+                ,nom,prenom,adresse,telephone,email,mdp,carte);
     }
 }
