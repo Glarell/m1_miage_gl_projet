@@ -9,6 +9,7 @@ public class DeconnectionChoice extends ChoicesAbstract{
     @Override
     public int execute(Scanner scanner, User user) {
         System.out.println("Me déconnecter");
+        Application.currentClient = null;
         user.setState(Application.STATE_ANONYMOUS);
         return Application.RETURN_SUCCESS;
     }

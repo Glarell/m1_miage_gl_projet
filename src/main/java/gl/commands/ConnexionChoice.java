@@ -27,6 +27,7 @@ public class ConnexionChoice extends ChoicesAbstract {
                 password = Application.askForLine("Mauvaise saisie !\nSaisir mot de passe :");
             }
             client = ClientDAO.getClientByEmailPwd(email, password);
+            Application.currentClient = client;
         }
         //connecte
         user.setState(Application.STATE_CONNECTED);

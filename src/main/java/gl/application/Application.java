@@ -1,5 +1,6 @@
 package gl.application;
 
+import gl.database.model.Client;
 import gl.ihm.Choices;
 import gl.commands.ChoicesAbstract;
 
@@ -18,6 +19,7 @@ public class Application {
     private static Scanner scanner;
     private final Choices choices = new Choices();
     private final User currentUser;
+    public static Client currentClient;
 
     public Application() {
         scanner = new Scanner(System.in);
