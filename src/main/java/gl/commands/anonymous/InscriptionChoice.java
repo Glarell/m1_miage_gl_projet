@@ -49,7 +49,7 @@ public class InscriptionChoice extends ChoicesAbstract {
         // enregistrement du client
         Client client = new Client(lastname,firstname,address,tel,email,password,card);
         try {
-            ClientDAO.registrerClient(client);
+            Application.currentClient=ClientDAO.registrerClient(client);
         } catch (SQLException throwables) {
             System.out.println("Erreur : champs incompatables selon saisies !");
             this.execute(scanner,user);

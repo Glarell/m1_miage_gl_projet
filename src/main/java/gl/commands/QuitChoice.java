@@ -14,6 +14,7 @@ public class QuitChoice extends ChoicesAbstract{
     @Override
     public int execute(Scanner scanner, User user){
         System.out.println("Arrêt de l'application \n");
+        Application.currentClient = null;
         return Application.RETURN_QUIT;
     }
 }
