@@ -19,7 +19,7 @@ public class InscriptionChoice extends ChoicesAbstract {
     public int execute(Scanner scanner, User user) {
         System.out.println("[------Inscription------]\n");
         String firstname = Application.askForLine("Saisir prénom :");
-        while (firstname.matches(".*\\d.*") || firstname.isEmpty()) {
+        while (firstname.matches(".*\\d.*")) {
             firstname = Application.askForLine("Mauvaise saisie !\nSaisir prénom :");
         }
         String lastname = Application.askForLine("Saisir nom :");
@@ -27,9 +27,6 @@ public class InscriptionChoice extends ChoicesAbstract {
             lastname = Application.askForLine("Mauvaise saisie !\nSaisir nom :");
         }
         String address = Application.askForLine("Saisir adresse :");
-        while (address.isEmpty()) {
-            address = Application.askForLine("Mauvaise saisie !\nSaisir adresse :");
-        }
         String tel = Application.askForLine("Saisir numéro de téléphone :");
         while (!tel.matches("\\d{10}")) {
             tel = Application.askForLine("Mauvaise saisie !\nSaisir numéro de téléphone :");
@@ -39,9 +36,6 @@ public class InscriptionChoice extends ChoicesAbstract {
             email = Application.askForLine("Mauvaise saisie ou email déjà enregistré !\nSaisir email :");
         }
         String password = Application.askForLine("Saisir mot de passe :");
-        while (password.isEmpty()) {
-            password = Application.askForLine("Mauvaise saisie !\nSaisir mot de passe :");
-        }
         String card = Application.askForLine("Saisir numéro carte bancaire (16 chiffres) :");
         while (!card.matches("\\d{16}")) {
             card = Application.askForLine("Mauvaise saisie !\nSaisir numéro carte bancaire (16 chiffres) :");

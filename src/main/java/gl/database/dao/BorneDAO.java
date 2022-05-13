@@ -56,6 +56,31 @@ public class BorneDAO {
     }
 
     /**
+     * Récupération de toutes les bornes disponibles à une date et un intervalle donné
+     *
+     * @param date la date de recherche
+     * @param int1 intervalle de début
+     * @param int2 intervalle de fin
+     */
+    public static List<Borne> getAllBorneFromDateDispo(Date date, Time int1, Time int2){
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        List<Borne> listOfBorne =new ArrayList<>();
+        try{
+            PreparedStatement stmt = conn.prepareStatement("");
+
+            ResultSet res = stmt.executeQuery();
+            while (res.next()){
+                Borne borne = new Borne();
+                setBorneAttributes(res, borne);
+                listOfBorne.add(borne);
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return listOfBorne;
+    }
+
+    /**
      * Mise à jour de l'état d'une borne dans la BDD
      *
      * @param borne        la borne à modifier
