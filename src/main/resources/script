@@ -1,6 +1,7 @@
 CREATE TABLE Client
 (
-    id_client SERIAL CONSTRAINT PK_client PRIMARY KEY,
+    id_client SERIAL
+        CONSTRAINT PK_client PRIMARY KEY,
     nom       VARCHAR(50) NOT NULL,
     prenom    VARCHAR(50) NOT NULL,
     adresse   VARCHAR(50) NOT NULL,
@@ -16,11 +17,6 @@ CREATE TABLE TypeNotification
     id_typeNotification VARCHAR(50)
         CONSTRAINT PK_typeNotification PRIMARY KEY
 );
-
-insert into TypeNotification (id_typeNotification)
-values ('SMS');
-insert into TypeNotification (id_typeNotification)
-values ('Mail');
 
 CREATE TABLE Notification
 (
@@ -66,15 +62,6 @@ CREATE TABLE EtatBorne
         CONSTRAINT PK_etatBorne PRIMARY KEY
 );
 
-insert into EtatBorne (id_etatBorne)
-values ('disponible');
-insert into EtatBorne (id_etatBorne)
-values ('indisponible');
-insert into EtatBorne (id_etatBorne)
-values ('réservée');
-insert into EtatBorne (id_etatBorne)
-values ('occupée');
-
 CREATE TABLE Borne
 (
     id_borne     SERIAL
@@ -89,7 +76,7 @@ CREATE TABLE Abonnement
         CONSTRAINT PK_abonnement PRIMARY KEY,
     date_abonnement  DATE    NOT NULL,
     debut_intervalle TIME    NOT NULL,
-    fin_intervalle   TIME    NOT NULL,
+    fin_intervalle   TIME    NOT NULL CHECK (debut_intervalle < fin_intervalle),
     id_client        INTEGER NOT NULL
         CONSTRAINT FK_id_client_abonnement REFERENCES Client (id_client),
     id_borne         INTEGER NOT NULL
@@ -102,7 +89,7 @@ CREATE TABLE Reservation
         CONSTRAINT PK_reservation PRIMARY KEY,
     date_reservation DATE    NOT NULL,
     debut_intervalle TIME    NOT NULL,
-    fin_intervalle   TIME    NOT NULL,
+    fin_intervalle   TIME    NOT NULL CHECK (debut_intervalle < fin_intervalle),
     nb_prolongement  INTEGER NOT NULL DEFAULT 0,
     isSupplement     BOOLEAN NOT NULL DEFAULT FALSE,
     id_estAssocie    INTEGER NOT NULL
@@ -110,3 +97,117 @@ CREATE TABLE Reservation
     id_borne         INTEGER NOT NULL
         CONSTRAINT FK_id_borne_reservation REFERENCES Borne (id_borne)
 );
+
+insert into Client(nom, prenom, adresse, telephone, email, mdp, carte)
+values ('Vérane', 'Bunyard', '11 Warrior Terrace', '2629895023', 'fbunyard0@cnbc.com', 'ZqbPLnlFX', '4041379991938');
+insert into Client(nom, prenom, adresse, telephone, email, mdp, carte)
+values ('Océanne', 'Ellcock', '8755 Brentwood Junction', '5894197992', 'pellcock1@alexa.com', 'c4Fs8W62Uu',
+        '4041597199699933');
+insert into Client(nom, prenom, adresse, telephone, email, mdp, carte)
+values ('Léane', 'Van De Cappelle', '929 Orin Park', '7165104919', 'mvandecappelle2@ucsd.edu', 'xbNy44i',
+        '4041376956261850');
+insert into Client(nom, prenom, adresse, telephone, email, mdp, carte)
+values ('Aurélie', 'Good', '67370 Corry Park', '5762244063', 'mgood6@ca.gov', 'zkx3hqlQhx', '4017955827365');
+insert into Client(nom, prenom, adresse, telephone, email, mdp, carte)
+values ('Kévina', 'Hebblewaite', '612 Buhler Alley', '8302051880', 'ehebblewaite0@flavors.me', 'zv9tT33nxL',
+        '4243683094835');
+
+insert into TypeNotification (id_typeNotification)
+values ('SMS');
+insert into TypeNotification (id_typeNotification)
+values ('Mail');
+
+insert into Notification(contenu, id_client, id_typeNotification)
+values ('Merci pour la confiance que vous portez à notre application', 1, 'Mail');
+insert into Notification(contenu, id_client, id_typeNotification)
+values ('Merci pour la confiance que vous portez à notre application', 2, 'Mail');
+insert into Notification(contenu, id_client, id_typeNotification)
+values ('Merci pour la confiance que vous portez à notre application', 3, 'Mail');
+insert into Notification(contenu, id_client, id_typeNotification)
+values ('Merci pour la confiance que vous portez à notre application', 4, 'Mail');
+insert into Notification(contenu, id_client, id_typeNotification)
+values ('Merci pour la confiance que vous portez à notre application', 5, 'Mail');
+
+insert into Notification(contenu, id_client, id_typeNotification)
+values ('Votre numéro de téléphone est valide', 1, 'SMS');
+insert into Notification(contenu, id_client, id_typeNotification)
+values ('Votre numéro de téléphone est valide', 2, 'SMS');
+insert into Notification(contenu, id_client, id_typeNotification)
+values ('Votre numéro de téléphone est valide', 3, 'SMS');
+insert into Notification(contenu, id_client, id_typeNotification)
+values ('Votre numéro de téléphone est valide', 4, 'SMS');
+insert into Notification(contenu, id_client, id_typeNotification)
+values ('Votre numéro de téléphone est valide', 5, 'SMS');
+
+insert into Transaction(contenu, date_transaction, id_client)
+values ('Création de compte', '30/08/2021', 1);
+insert into Transaction(contenu, date_transaction, id_client)
+values ('Création de compte', '18/10/2021', 2);
+insert into Transaction(contenu, date_transaction, id_client)
+values ('Création de compte', '09/07/2021', 3);
+insert into Transaction(contenu, date_transaction, id_client)
+values ('Création de compte', '04/03/2022', 4);
+insert into Transaction(contenu, date_transaction, id_client)
+values ('Création de compte', '12/01/2022', 5);
+
+insert into Plaque (id_plaque)
+values ('NJ-961-QA');
+insert into Plaque (id_plaque)
+values ('CG-864-YN');
+insert into Plaque (id_plaque)
+values ('GQ-409-NO');
+insert into Plaque (id_plaque)
+values ('SM-812-FQ');
+insert into Plaque (id_plaque)
+values ('IE-244-QL');
+insert into Plaque (id_plaque)
+values ('CJ-330-UU');
+insert into Plaque (id_plaque)
+values ('UB-510-LC');
+insert into Plaque (id_plaque)
+values ('ZG-724-RQ');
+
+insert into EstAssocie (id_client, id_plaque)
+values (1, 'ZG-724-RQ');
+insert into EstAssocie (id_client, id_plaque)
+values (2, 'SM-812-FQ');
+insert into EstAssocie (id_client, id_plaque)
+values (3, 'IE-244-QL');
+insert into EstAssocie (id_client, id_plaque)
+values (4, 'CJ-330-UU');
+insert into EstAssocie (id_client, id_plaque)
+values (5, 'UB-510-LC');
+
+insert into EtatBorne (id_etatBorne)
+values ('disponible');
+insert into EtatBorne (id_etatBorne)
+values ('indisponible');
+insert into EtatBorne (id_etatBorne)
+values ('réservée');
+insert into EtatBorne (id_etatBorne)
+values ('occupée');
+
+insert into Borne (id_etatBorne)
+values ('disponible');
+insert into Borne (id_etatBorne)
+values ('disponible');
+insert into Borne (id_etatBorne)
+values ('disponible');
+insert into Borne (id_etatBorne)
+values ('disponible');
+insert into Borne (id_etatBorne)
+values ('disponible');
+
+insert into Abonnement (date_abonnement, debut_intervalle, fin_intervalle, id_client, id_borne)
+values ('01/05/2022', '12:00', '13:00', 5, 1);
+insert into Abonnement (date_abonnement, debut_intervalle, fin_intervalle, id_client, id_borne)
+values ('01/05/2022', '12:30', '13:30', 1, 3);
+
+insert into Reservation (date_reservation, debut_intervalle, fin_intervalle, id_estAssocie, id_borne)
+values ('16/05/2022', '14:00', '15:15', 2, 1);
+insert into Reservation (date_reservation, debut_intervalle, fin_intervalle, id_estAssocie, id_borne)
+values ('07/06/2022', '14:00', '15:10', 1, 2);
+insert into Reservation (date_reservation, debut_intervalle, fin_intervalle, id_estAssocie, id_borne)
+values ('28/05/2022', '14:00', '15:10', 3, 4);
+insert into Reservation (date_reservation, debut_intervalle, fin_intervalle, id_estAssocie, id_borne)
+values ('07/06/2022', '14:40', '15:10', 3, 1);
