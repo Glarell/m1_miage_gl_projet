@@ -115,6 +115,7 @@ public class ClientDAO {
         client.setEmail(res.getString(6));
         client.setMdp(res.getString(7));
         client.setCarte(res.getString(8));
+        client.setManager(res.getBoolean(9));
     }
 
     /**
