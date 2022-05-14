@@ -18,7 +18,7 @@ public class ConnexionChoice extends ChoicesAbstract {
         System.out.println("[------Connexion------]\n");
         Client client = new Client();
         while (client.isNotReal()) {
-                String email = Application.askForLine("Saisir email :");
+            String email = Application.askForLine("Saisir email :");
             while (!email.matches(".+@.+\\..+")) {
                 email = Application.askForLine("Mauvaise saisie !\nSaisir email :");
             }
@@ -29,8 +29,12 @@ public class ConnexionChoice extends ChoicesAbstract {
             client = ClientDAO.getClientByEmailPwd(email, password);
             Application.currentClient = client;
         }
-        //connecte
-        user.setState(Application.STATE_CONNECTED);
+        //Vérification du status de la personne qui se connecte
+        if (client.isManager()) {
+            user.setState(Application.STATE_MANAGER);
+        } else {
+            user.setState(Application.STATE_CONNECTED);
+        }
         return Application.RETURN_SUCCESS;
     }
 }

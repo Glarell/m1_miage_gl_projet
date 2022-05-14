@@ -9,6 +9,7 @@ CREATE TABLE Client
     email     VARCHAR(50) NOT NULL,
     mdp       VARCHAR(50) NOT NULL,
     carte     VARCHAR(16) NOT NULL,
+    isManager BOOLEAN     NOT NULL DEFAULT FALSE,
     CONSTRAINT Unique_Client UNIQUE (email)
 );
 
@@ -106,6 +107,8 @@ CREATE TABLE VariableApplication
     valeur                 INTEGER NOT NULL CHECK ( valeur > 0 )
 );
 
+insert into Client(nom, prenom, adresse, telephone, email, mdp, carte, isManager)
+values ('Admin', 'Admin', 'Admin', 'Admin', 'Admin@gmail.com', 'root', 'Admin', True);
 insert into Client(nom, prenom, adresse, telephone, email, mdp, carte)
 values ('Vérane', 'Bunyard', '11 Warrior Terrace', '2629895023', 'fbunyard0@cnbc.com', 'ZqbPLnlFX', '4041379991938');
 insert into Client(nom, prenom, adresse, telephone, email, mdp, carte)

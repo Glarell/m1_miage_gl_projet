@@ -10,8 +10,10 @@ public class Client {
     private String email;
     private String mdp;
     private String carte;
+    private boolean isManager;
 
-    public Client() {}
+    public Client() {
+    }
 
     public Client(String nom, String prenom, String adresse, String telephone, String email, String mdp, String carte) {
         this.nom = nom;
@@ -24,7 +26,7 @@ public class Client {
     }
 
     public boolean isNotReal() {
-        return this.id_client==-1;
+        return this.id_client == -1;
     }
 
     public String getNom() {
@@ -91,15 +93,24 @@ public class Client {
         this.carte = carte;
     }
 
+    public boolean isManager() {
+        return isManager;
+    }
+
+    public void setManager(boolean manager) {
+        isManager = manager;
+    }
+
     @Override
     public String toString() {
         return String.format("Nom: %s\n" +
-                "Prénom: %s\n" +
-                "Adresse: %s\n" +
-                "Téléphone: %s\n" +
-                "Email: %s\n" +
-                "Mot de passe: %s\n" +
-                "Carte CB: %s\n"
-                ,nom,prenom,adresse,telephone,email,mdp,carte);
+                        "Prénom: %s\n" +
+                        "Adresse: %s\n" +
+                        "Téléphone: %s\n" +
+                        "Email: %s\n" +
+                        "Mot de passe: %s\n" +
+                        "Carte CB: %s\n" +
+                        "Administrateur: %b\n"
+                , nom, prenom, adresse, telephone, email, mdp, carte, isManager);
     }
 }
