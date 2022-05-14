@@ -3,6 +3,7 @@ package gl.database.model;
 public class VariableApplication {
 
     public final static String WAITING_TIME = "délai attente";
+    public final static String ADDITIONAL_COST = "frais supplémentaires réservation";
 
     private int id_variableApplication = -1;
     private String nom;

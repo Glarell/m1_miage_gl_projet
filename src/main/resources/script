@@ -225,3 +225,5 @@ values ('07/06/2022', '14:40', '15:10', 3, 1);
 
 insert into VariableApplication (nom, valeur)
 values ('délai attente', 15);
+insert into VariableApplication (nom, valeur)
+values ('frais supplémentaires réservation', 30);
