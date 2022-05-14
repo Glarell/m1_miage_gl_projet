@@ -98,6 +98,14 @@ CREATE TABLE Reservation
         CONSTRAINT FK_id_borne_reservation REFERENCES Borne (id_borne)
 );
 
+CREATE TABLE VariableApplication
+(
+    id_variableApplication SERIAL
+        CONSTRAINT PK_variableApplication PRIMARY KEY,
+    nom                    VARCHAR NOT NULL,
+    valeur                 INTEGER NOT NULL CHECK ( valeur > 0 )
+);
+
 insert into Client(nom, prenom, adresse, telephone, email, mdp, carte)
 values ('Vérane', 'Bunyard', '11 Warrior Terrace', '2629895023', 'fbunyard0@cnbc.com', 'ZqbPLnlFX', '4041379991938');
 insert into Client(nom, prenom, adresse, telephone, email, mdp, carte)
@@ -211,3 +219,6 @@ insert into Reservation (date_reservation, debut_intervalle, fin_intervalle, id_
 values ('28/05/2022', '14:00', '15:10', 3, 4);
 insert into Reservation (date_reservation, debut_intervalle, fin_intervalle, id_estAssocie, id_borne)
 values ('07/06/2022', '14:40', '15:10', 3, 1);
+
+insert into VariableApplication (nom, valeur)
+values ('délai attente', 15);
