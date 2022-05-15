@@ -27,6 +27,16 @@ public class Reservation {
         this.id_borne = id_borne;
     }
 
+    public Reservation(Date date_reservation, Time debut_intervalle, Time fin_intervalle, int nb_prolongement, boolean isSupplement, int id_estAssocie, int id_borne) {
+        this.date_reservation = date_reservation;
+        this.debut_intervalle = debut_intervalle;
+        this.fin_intervalle = fin_intervalle;
+        this.nb_prolongement = nb_prolongement;
+        this.isSupplement = isSupplement;
+        this.id_estAssocie = id_estAssocie;
+        this.id_borne = id_borne;
+    }
+
     public int getId_reservation() {
         return id_reservation;
     }
