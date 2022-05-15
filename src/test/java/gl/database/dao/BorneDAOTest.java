@@ -5,7 +5,11 @@ import gl.database.model.EtatBorne;
 import org.junit.jupiter.api.Test;
 import org.postgresql.util.PSQLException;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,10 +58,18 @@ public class BorneDAOTest {
     }
 
     @Test
-    public void testUpdateBorneWithUnknowState() throws SQLException {
+    public void testUpdateBorneWithUnknowState() {
         assertThatThrownBy(() -> {
             Borne borne = BorneDAO.getAllBorne().get(0);
             BorneDAO.updateStateOfBorne(borne, "Unknow");
         }).isInstanceOf(PSQLException.class);
+    }
+
+    @Test
+    public void testgetAllBorneFromDateDispo() throws ParseException {
+        Date date = new Date(new SimpleDateFormat("dd-MM-yyyy").parse("14-05-2022").getTime());
+        Time int1 = new Time(new SimpleDateFormat("dd-MM-yyyy HH:mm").parse("14-05-2022 11:00").getTime());
+        Time int2 = new Time(new SimpleDateFormat("dd-MM-yyyy HH:mm").parse("14-05-2022 15:00").getTime());
+        assertThat(BorneDAO.getAllBorneFromDateDispo(date, int1, int2)).isNotNull();
     }
 }

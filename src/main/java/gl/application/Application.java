@@ -53,13 +53,21 @@ public class Application {
 
     public static String askForLine(String param) {
         System.out.println(param);
-        return scanner.nextLine();
+        while (true){
+            String line = scanner.nextLine();
+            if (!line.isBlank() && !line.isEmpty()){
+                System.out.println("--------");
+                return line;
+            }
+            System.out.println("Veuillez saisir des caractères !");
+        }
     }
 
     public static int askForIntegerLine(String param) {
         System.out.println(param);
         while (true) {
             try {
+                System.out.println("---------");
                 return Integer.parseInt(scanner.nextLine());
             } catch (NumberFormatException e) {
                 System.out.println("Veuillez saisir un entier !");
