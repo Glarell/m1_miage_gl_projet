@@ -66,7 +66,7 @@ public class BorneDAO {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         List<Integer> listOfBorne = new ArrayList<>();
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT id_borne FROM Reservation where date_reservation = ? and ((? > fin_intervalle and ? > fin_intervalle) or (? < debut_intervalle and ? < debut_intervalle));");
+            PreparedStatement stmt = conn.prepareStatement("SELECT id_borne FROM Reservation EXCEPT SELECT id_borne FROM Reservation where date_reservation = ? and not ((? > fin_intervalle and ? > fin_intervalle) or (? < debut_intervalle and ? < debut_intervalle));");
             stmt.setDate(1, date);
             stmt.setTime(2, int1);
             stmt.setTime(3, int2);
