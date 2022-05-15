@@ -5,6 +5,7 @@ import gl.application.User;
 import gl.commands.ChoicesAbstract;
 import gl.database.dao.BorneDAO;
 import gl.database.dao.EstAssocieDAO;
+import gl.database.dao.PlaqueDAO;
 import gl.database.dao.ReservationDAO;
 import gl.database.model.EstAssocie;
 import gl.database.model.Reservation;
@@ -108,6 +109,55 @@ public class VerifDispoChoice extends ChoicesAbstract {
         }
     }
 
+    /**
+     * @return vrai si l'utilisateur souhaite réserver avec une voiture louée ou empruntée
+     */
+    public boolean isVoitureEmprunteOuLoue() {
+        String isEmprunte = Application.askForLine("Réservation avec voiture louée ou empruntée (oui/non) : ");
+        while (!isEmprunte.matches("^(?:oui|non)$")) {
+            isEmprunte = Application.askForLine("Mauvaise saisie !\nRéservation avec voiture louée ou empruntée (oui/non) :");
+        }
+        return isEmprunte.equals("oui");
+    }
+
+    /**
+     * Génération d'une nouvelle plaque et création de l'association temporaire
+     *
+     * @return l'id de la nouvelle association temporaire
+     */
+    public int generateNewEstAssocieTemporaire() {
+        int new_id_estAssocie = -1;
+        String plaque_id = Application.askForLine("Saisir numéro d'immatriculation : ");
+        while (!plaque_id.matches("[A-Z]{2}-\\d{3}-[A-Z]{2}")) {
+            plaque_id = Application.askForLine("Mauvaise saisie !\nSaisir numéro d'immatriculation :");
+        }
+
+        //Ajout de la nouvelle plaque dans la BDD et de l'association temporaire
+        try {
+            PlaqueDAO.insertNewPlaque(plaque_id);
+            EstAssocie estAssocie = new EstAssocie(Application.currentClient.getId_client(), plaque_id);
+            EstAssocieDAO.insertNewEstAssocieTemporaire(estAssocie);
+            new_id_estAssocie = EstAssocieDAO.getEstAssocieTemporaire(Application.currentClient.getId_client(), plaque_id).getId_estAssocie();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return new_id_estAssocie;
+    }
+
+    /**
+     * Génération de la réservation du client
+     */
+    public void generateNewReservation(Date date, Time int1, Time int2, int id_estAssocie, int borne) {
+        Reservation reserv = new Reservation(date, int1, int2, 0, false, id_estAssocie, borne);
+        try {
+            ReservationDAO.registrerReservation(reserv);
+            System.out.println("Ajout réussi de la réservation");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Erreur d'insertion de la réservation");
+        }
+    }
+
     public int reserver(ArrayList<Integer> bornes, Date date, Time int1, Time int2) {
         AtomicBoolean condition = new AtomicBoolean(true);
         while (condition.get()) {
@@ -120,30 +170,28 @@ public class VerifDispoChoice extends ChoicesAbstract {
                     for (Integer borne : bornes) {
                         if (borne == choix) {
                             condition.set(false);
-                            ArrayList<EstAssocie> estAssocies = (ArrayList<EstAssocie>) EstAssocieDAO.getEstAssocieByClient(Application.currentClient.getId_client());
-                            if (estAssocies.size() == 0){
-                                return Application.RETURN_SUCCESS;
-                            }else{
-                                System.out.println("Choissisez la plaque avec laquelle réserver :");
-                                HashMap<String, EstAssocie> map = new HashMap<>();
-                                for (EstAssocie estAssocy : estAssocies) {
-                                    System.out.println(estAssocy.getId_plaque());
-                                    map.put(estAssocy.getId_plaque(), estAssocy);
+                            //Réservation avec une voiture empruntée ou louée
+                            if (this.isVoitureEmprunteOuLoue()) {
+                                this.generateNewReservation(date, int1, int2, generateNewEstAssocieTemporaire(), choix);
+                            } else {
+                                ArrayList<EstAssocie> estAssocies = (ArrayList<EstAssocie>) EstAssocieDAO.getEstAssocieByClient(Application.currentClient.getId_client());
+                                if (estAssocies.size() == 0) {
+                                    return Application.RETURN_SUCCESS;
+                                } else {
+                                    System.out.println("Choissisez la plaque avec laquelle réserver :");
+                                    HashMap<String, EstAssocie> map = new HashMap<>();
+                                    for (EstAssocie estAssocy : estAssocies) {
+                                        System.out.println(estAssocy.getId_plaque());
+                                        map.put(estAssocy.getId_plaque(), estAssocy);
+                                    }
+                                    String plaque_choice = Application.askForLine("Saissisez le nom de la plaque");
+                                    while (map.getOrDefault(plaque_choice, null) == null) {
+                                        System.out.println("Vous n'avez pas saisi une plaque valide, veuillez recommencer");
+                                        plaque_choice = Application.askForLine("Saissisez le nom de la plaque");
+                                    }
+                                    this.generateNewReservation(date, int1, int2, map.get(plaque_choice).getId_estAssocie(), choix);
+                                    return Application.RETURN_SUCCESS;
                                 }
-                                String plaque_choice = Application.askForLine("Saissisez le nom de la plaque");
-                                while(map.getOrDefault(plaque_choice, null) == null){
-                                    System.out.println("Vous n'avez pas saisi une plaque valide, veuillez recommencer");
-                                    plaque_choice = Application.askForLine("Saissisez le nom de la plaque");
-                                }
-                                Reservation reserv = new Reservation(date, int1, int2, 0, false, map.get(plaque_choice).getId_estAssocie(), choix);
-                                try{
-                                    ReservationDAO.registrerReservation(reserv);
-                                    System.out.println("Ajout réussi de la réservation");
-                                }catch (SQLException e){
-                                    e.printStackTrace();
-                                    System.out.println("Erreur d'insertion de la réservation");
-                                }
-                                return Application.RETURN_SUCCESS;
                             }
                         }
                     }

@@ -80,6 +80,30 @@ public class EstAssocieDAO {
     }
 
     /**
+     * Récupération de l'association client - plaque temporaire dans la BDD
+     *
+     * @param id_client l'id du client recherché
+     * @param id_plaque l'id de la plaque recherché
+     * @return l'association client - plaque
+     */
+    public static EstAssocie getEstAssocieTemporaire(int id_client, String id_plaque) {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        EstAssocie estAssocie = new EstAssocie();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM EstAssocie WHERE id_client = ? and id_plaque = ? and isTemporaire = true");
+            stmt.setInt(1, id_client);
+            stmt.setString(2, id_plaque);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                setEstAssocieAttributes(res, estAssocie);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return estAssocie;
+    }
+
+    /**
      * Insertion d'une association client - plaque dans la BDD
      *
      * @param estAssocie l'association client - plaque
