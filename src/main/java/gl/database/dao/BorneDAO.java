@@ -62,19 +62,21 @@ public class BorneDAO {
      * @param int1 intervalle de début
      * @param int2 intervalle de fin
      */
-    public static List<Borne> getAllBorneFromDateDispo(Date date, Time int1, Time int2){
+    public static List<Integer> getAllBorneFromDateDispo(Date date, Time int1, Time int2) {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
-        List<Borne> listOfBorne =new ArrayList<>();
-        try{
-            PreparedStatement stmt = conn.prepareStatement("");
-
+        List<Integer> listOfBorne = new ArrayList<>();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT id_borne FROM Reservation where date_reservation = ? and ((? > fin_intervalle and ? > fin_intervalle) or (? < debut_intervalle and ? < debut_intervalle));");
+            stmt.setDate(1, date);
+            stmt.setTime(2, int1);
+            stmt.setTime(3, int2);
+            stmt.setTime(4, int1);
+            stmt.setTime(5, int2);
             ResultSet res = stmt.executeQuery();
-            while (res.next()){
-                Borne borne = new Borne();
-                setBorneAttributes(res, borne);
-                listOfBorne.add(borne);
+            while (res.next()) {
+                listOfBorne.add(res.getInt(1));
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return listOfBorne;
