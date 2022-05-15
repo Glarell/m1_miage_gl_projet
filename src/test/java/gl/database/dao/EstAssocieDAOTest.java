@@ -138,6 +138,18 @@ public class EstAssocieDAOTest {
         EstAssocieDAO.deleteOldEstAssocie(999, "plaque_test");
     }
 
+    @Test
+    public void testgetEstAssocieTemporaire() throws SQLException {
+        EstAssocie estAssocie = new EstAssocie(999, "plaque_test");
+        EstAssocieDAO.insertNewEstAssocieTemporaire(estAssocie);
+        EstAssocie estAssocieTemporaire = EstAssocieDAO.getEstAssocieTemporaire(999, "plaque_test");
+
+        assertThat(estAssocieTemporaire.getId_client()).isEqualTo(estAssocie.getId_client());
+        assertThat(estAssocieTemporaire.getId_plaque()).isEqualTo(estAssocie.getId_plaque());
+        assertThat(estAssocieTemporaire.isTemporaire()).isTrue();
+        EstAssocieDAO.deleteOldEstAssocie(999, "plaque_test");
+    }
+
     @AfterAll
     static void end() throws SQLException {
         ClientDAO.deleteClient(999);
