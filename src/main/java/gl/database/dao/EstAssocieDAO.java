@@ -9,6 +9,23 @@ import java.util.List;
 
 public class EstAssocieDAO {
 
+    public static EstAssocie getEstAssocieById(int id){
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        EstAssocie temp = new EstAssocie();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM EstAssocie WHERE id_estassocie = ?");
+            stmt.setInt(1,id);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                EstAssocie estAssocie = new EstAssocie();
+                setEstAssocieAttributes(res, estAssocie);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return temp;
+    }
+
     /**
      * Récupération de toutes les associations client - plaque présentes dans la BDD
      *
