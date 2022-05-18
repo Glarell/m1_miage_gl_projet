@@ -5,18 +5,53 @@ import gl.database.model.Abonnement;
 import gl.database.model.Reservation;
 import gl.database.model.Transaction;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
 
 public class ReservationDAO {
+
+    public static void deleteReservationById(int id){
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM reservation where id_reservation = ?");
+            stmt.setInt(1, id);
+            stmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateReservationDate(int id, Date date, Time int1, Time int2){
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("UPDATE Reservation SET date_reservation = ?, debut_intervalle = ?, fin_intervalle = ? where id_reservation = ?");
+            stmt.setDate(1, date);
+            stmt.setTime(2, int1);
+            stmt.setTime(3, int2);
+            stmt.setInt(4, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateReservationEstAssocie(int id, int est_associe){
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        try{
+            PreparedStatement stmt = conn.prepareStatement("UPDATE Reservation SET id_estassocie = ? where id_reservation = ?");
+            stmt.setInt(1,est_associe);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
 
     public static Reservation getReservationById(int id) {
         Reservation reservation = new Reservation();
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM transaction where id_reservation=?");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Reservation where id_reservation=?");
             stmt.setInt(1, id);
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
@@ -26,6 +61,24 @@ public class ReservationDAO {
             e.printStackTrace();
         }
         return reservation;
+    }
+
+    public static ArrayList<Reservation> getReservationByClientId(int id) {
+        ArrayList<Reservation> reservations = new ArrayList<>();
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Reservation INNER JOIN EstAssocie EA on Reservation.id_estAssocie = EA.id_estAssocie where EA.id_client = ?;");
+            stmt.setInt(1, id);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                Reservation temp = new Reservation();
+                setReservationAttributes(res, temp);
+                reservations.add(temp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reservations;
     }
 
     public static Reservation registrerReservation(Reservation reservation) throws SQLException {

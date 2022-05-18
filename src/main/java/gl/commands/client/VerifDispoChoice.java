@@ -34,9 +34,9 @@ public class VerifDispoChoice extends ChoicesAbstract {
     @Override
     public int execute(Scanner scanner, User user) {
         System.out.println("[------Disponibilité des bornes------]");
-        getDate();
-        getInt1();
-        getInt2();
+        Date date = getDate();
+        Time int1 = getInt1(new SimpleDateFormat("dd-MM-yyy").format(date));
+        Time int2 = getInt2(new SimpleDateFormat("dd-MM-yyy").format(date));
         if (int1.compareTo(int2) >= 0) {
             System.out.println("Les intervalles ne sont pas bien renseignés !");
             return Application.RETURN_FAILED;
@@ -52,14 +52,13 @@ public class VerifDispoChoice extends ChoicesAbstract {
         return Application.RETURN_SUCCESS;
     }
 
-    public void getDate() {
-        this.dateString = Application.askForLine("Saisir la date (dd-mm-yyyy) : ");
+    public static Date getDate() {
+        String dateString = Application.askForLine("Saisir la date (dd-mm-yyyy) : ");
         boolean condition = true;
-        while (condition) {
+        while (true) {
             if (dateString.matches("\\d{2}-\\d{2}-\\d{4}")) {
                 try {
-                    this.date = new Date(new SimpleDateFormat("dd-MM-yyyy").parse(dateString).getTime());
-                    condition = false;
+                    return new Date(new SimpleDateFormat("dd-MM-yyyy").parse(dateString).getTime());
                 } catch (ParseException e) {
                     System.out.println("La date n'est pas valide");
                     dateString = Application.askForLine("Saisir la date (dd-mm-yyyy) : ");
@@ -71,40 +70,37 @@ public class VerifDispoChoice extends ChoicesAbstract {
         }
     }
 
-    public void getInt1() {
-        String int1 = Application.askForLine("Saisir l'intervalle de début (hh:mm) : ");
-        boolean condition = true;
-        while (condition) {
-            if (int1.matches("\\d{2}:\\d{2}")) {
+    public static Time getInt1(String dateString) {
+        String int1String = Application.askForLine("Saisir l'intervalle de début (hh:mm) : ");
+        while (true) {
+            if (int1String.matches("\\d{2}:\\d{2}")) {
                 try {
-                    this.int1 = new Time(new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(dateString + " " + int1).getTime());
-                    condition = false;
+                    return new Time(new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(dateString + " " + int1String).getTime());
                 } catch (ParseException e) {
                     System.out.println("L'intervalle n'est pas valide");
-                    int1 = Application.askForLine("Saisir l'intervalle de début (hh:mm) : ");
+                    int1String = Application.askForLine("Saisir l'intervalle de début (hh:mm) : ");
                 }
             } else {
                 System.out.println("L'intervalle saisi ne respecte pas le format hh:mm");
-                int1 = Application.askForLine("Saisir l'intervalle de début (hh:mm) : ");
+                int1String = Application.askForLine("Saisir l'intervalle de début (hh:mm) : ");
             }
         }
     }
 
-    public void getInt2() {
-        String int2 = Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ");
+    public static Time getInt2(String dateString) {
+        String int2String = Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ");
         boolean condition = true;
-        while (condition) {
-            if (int2.matches("\\d{2}:\\d{2}")) {
+        while (true) {
+            if (int2String.matches("\\d{2}:\\d{2}")) {
                 try {
-                    this.int2 = new Time(new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(dateString + " " + int2).getTime());
-                    condition = false;
+                    return new Time(new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(dateString + " " + int2String).getTime());
                 } catch (ParseException e) {
                     System.out.println("L'intervalle n'est pas valide");
-                    int2 = Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ");
+                    int2String = Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ");
                 }
             } else {
                 System.out.println("L'intervalle saisi ne respecte pas le format hh:mm");
-                int2 = Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ");
+                int2String = Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ");
             }
         }
     }
@@ -112,7 +108,7 @@ public class VerifDispoChoice extends ChoicesAbstract {
     /**
      * @return vrai si l'utilisateur souhaite réserver avec une voiture louée ou empruntée
      */
-    public boolean isVoitureEmprunteOuLoue() {
+    public static boolean isVoitureEmprunteOuLoue() {
         String isEmprunte = Application.askForLine("Réservation avec voiture louée ou empruntée (oui/non) : ");
         while (!isEmprunte.matches("^(?:oui|non)$")) {
             isEmprunte = Application.askForLine("Mauvaise saisie !\nRéservation avec voiture louée ou empruntée (oui/non) :");
@@ -125,7 +121,7 @@ public class VerifDispoChoice extends ChoicesAbstract {
      *
      * @return l'id de la nouvelle association temporaire
      */
-    public int generateNewEstAssocieTemporaire() {
+    public static int generateNewEstAssocieTemporaire() {
         int new_id_estAssocie = -1;
         String plaque_id = Application.askForLine("Saisir numéro d'immatriculation : ");
         while (!plaque_id.matches("[A-Z]{2}-\\d{3}-[A-Z]{2}")) {
