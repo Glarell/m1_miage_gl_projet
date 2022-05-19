@@ -12,7 +12,7 @@ public class ConsultProfileChoice extends ChoicesAbstract {
     @Override
     public int execute(Scanner scanner, User user) {
         System.out.println("[------Consulter mon profil------]\n");
-        Client client = ClientDAO.getClient(Application.currentClient);
+        Client client = ClientDAO.getClient(Application.currentClient.getId_client());
         System.out.println(client);
         return Application.RETURN_SUCCESS;
     }

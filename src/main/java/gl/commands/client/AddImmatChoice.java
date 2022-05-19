@@ -4,7 +4,6 @@ import gl.application.Application;
 import gl.application.User;
 import gl.commands.ChoicesAbstract;
 import gl.database.dao.PlaqueDAO;
-import gl.database.model.Plaque;
 
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -21,7 +20,7 @@ public class AddImmatChoice extends ChoicesAbstract {
         }
         try {
             PlaqueDAO.insertNewPlaque(plaque_id);
-            System.out.printf("La plaque d'immatriculation %s a été ajoutée !",plaque_id);
+            System.out.printf("La plaque d'immatriculation %s a été ajoutée !", plaque_id);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }

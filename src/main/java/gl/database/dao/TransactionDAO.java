@@ -1,7 +1,6 @@
 package gl.database.dao;
 
 import gl.database.ConnectionPostgre;
-import gl.database.model.Client;
 import gl.database.model.Transaction;
 
 import java.sql.*;
@@ -26,11 +25,16 @@ public class TransactionDAO {
 
     public static Transaction registrerTransaction(Transaction transaction) throws SQLException {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO Transaction (contenu,date_transaction,id_client) VALUES (?,?,?)");
-        stmt.setString(1,transaction.getContenu());
-        stmt.setDate(2,transaction.getDate_transaction());
-        stmt.setInt(3,transaction.getId_client());
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO Transaction (contenu,date_transaction,id_client) VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS);
+        stmt.setString(1, transaction.getContenu());
+        stmt.setDate(2, transaction.getDate_transaction());
+        stmt.setInt(3, transaction.getId_client());
         stmt.executeUpdate();
+        ResultSet rs = stmt.getGeneratedKeys();
+        if (rs.next()) {
+            int generatedKey = rs.getInt(1);
+            transaction.setId_transaction(generatedKey);
+        }
         return transaction;
     }
 

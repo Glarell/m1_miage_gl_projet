@@ -12,7 +12,15 @@ public class Abonnement {
     private int id_client;
     private int id_borne;
 
-    public Abonnement() {}
+    public Abonnement() {
+    }
+    public Abonnement(Date date_abonnement, Time debut_intervalle, Time fin_intervalle, int id_client, int id_borne) {
+        this.date_abonnement = date_abonnement;
+        this.debut_intervalle = debut_intervalle;
+        this.fin_intervalle = fin_intervalle;
+        this.id_client = id_client;
+        this.id_borne = id_borne;
+    }
 
     public Abonnement(int id_abonnement, Date date_abonnement, Time debut_intervalle, Time fin_intervalle, int id_client, int id_borne) {
         this.id_abonnement = id_abonnement;

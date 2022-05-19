@@ -1,8 +1,8 @@
 package gl.application;
 
+import gl.commands.ChoicesAbstract;
 import gl.database.model.Client;
 import gl.ihm.Choices;
-import gl.commands.ChoicesAbstract;
 
 import java.util.Scanner;
 import java.util.logging.Logger;
@@ -15,15 +15,39 @@ public class Application {
     public final static int RETURN_SUCCESS = 0;
     public final static int RETURN_FAILED = 1;
     public final static int RETURN_QUIT = 2;
-    private final Logger logger = Logger.getLogger(Application.class.getName());
+    public static Client currentClient;
     private static Scanner scanner;
+    private final Logger logger = Logger.getLogger(Application.class.getName());
     private final Choices choices = new Choices();
     private final User currentUser;
-    public static Client currentClient;
 
     public Application() {
         scanner = new Scanner(System.in);
         this.currentUser = new User(STATE_ANONYMOUS);
+    }
+
+    public static String askForLine(String param) {
+        System.out.println(param);
+        while (true) {
+            String line = scanner.nextLine();
+            if (!line.isBlank() && !line.isEmpty()) {
+                System.out.println("--------");
+                return line;
+            }
+            System.out.println("Veuillez saisir des caractères !");
+        }
+    }
+
+    public static int askForIntegerLine(String param) {
+        System.out.println(param);
+        while (true) {
+            try {
+                System.out.println("---------");
+                return Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Veuillez saisir un entier !");
+            }
+        }
     }
 
     public void start() {
@@ -51,35 +75,11 @@ public class Application {
         }
     }
 
-    public static String askForLine(String param) {
-        System.out.println(param);
-        while (true){
-            String line = scanner.nextLine();
-            if (!line.isBlank() && !line.isEmpty()){
-                System.out.println("--------");
-                return line;
-            }
-            System.out.println("Veuillez saisir des caractères !");
-        }
-    }
-
-    public static int askForIntegerLine(String param) {
-        System.out.println(param);
-        while (true) {
-            try {
-                System.out.println("---------");
-                return Integer.parseInt(scanner.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Veuillez saisir un entier !");
-            }
-        }
-    }
-
     public int parseOptions(int line) {
         ChoicesAbstract choice = this.choices.getFunction(line, currentUser.getState());
         if (choice != null) {
             return choice.execute(scanner, currentUser);
-        }else{
+        } else {
             System.out.println("Aucune option trouvée, veuillez réésayez svp");
             return RETURN_FAILED;
         }

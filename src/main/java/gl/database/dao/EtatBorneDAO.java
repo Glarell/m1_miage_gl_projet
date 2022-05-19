@@ -14,6 +14,7 @@ public class EtatBorneDAO {
 
     /**
      * Récupération de tous les états possible d'une borne présents dans la BDD
+     *
      * @return la liste des états possible
      */
     public static List<EtatBorne> getEtatBorne() {

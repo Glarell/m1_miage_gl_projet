@@ -11,10 +11,12 @@ public class Reservation {
     private Time fin_intervalle;
     private int nb_prolongement;
     private boolean isSupplement;
+    private boolean isTemporaire;
     private int id_estAssocie;
     private int id_borne;
 
-    public Reservation () {}
+    public Reservation() {
+    }
 
     public Reservation(int id_reservation, Date date_reservation, Time debut_intervalle, Time fin_intervalle, int nb_prolongement, boolean isSupplement, int id_estAssocie, int id_borne) {
         this.id_reservation = id_reservation;
@@ -36,6 +38,7 @@ public class Reservation {
         this.id_estAssocie = id_estAssocie;
         this.id_borne = id_borne;
     }
+
 
     public int getId_reservation() {
         return id_reservation;
@@ -99,5 +102,10 @@ public class Reservation {
 
     public void setId_borne(int id_borne) {
         this.id_borne = id_borne;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Réservation (%s) :\ndate: %s\nintervalle: %s -> %s\nborne: %s", id_reservation, date_reservation, debut_intervalle, fin_intervalle, id_borne);
     }
 }
