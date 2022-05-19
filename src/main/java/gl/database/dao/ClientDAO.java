@@ -13,7 +13,7 @@ public class ClientDAO {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Client where email = ?");
-            stmt.setString(1,email);
+            stmt.setString(1, email);
             ResultSet res = stmt.executeQuery();
             return res.next();
         } catch (SQLException e) {
@@ -62,8 +62,8 @@ public class ClientDAO {
         Client client = new Client();
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Client where email=? AND mdp=?");
-            stmt.setString(1,email);
-            stmt.setString(2,password);
+            stmt.setString(1, email);
+            stmt.setString(2, password);
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
                 setClientAttributes(res, client);
@@ -74,11 +74,12 @@ public class ClientDAO {
         return client;
     }
 
-    public static Client getClient(Client client) {
+    public static Client getClient(int id_client) {
+        Client client = new Client();
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Client where id_client=?");
-            stmt.setInt(1,client.getId_client());
+            stmt.setInt(1, id_client);
             ResultSet res = stmt.executeQuery();
             if (res.next()) {
                 setClientAttributes(res, client);
@@ -98,6 +99,7 @@ public class ClientDAO {
             while (res.next()) {
                 Client client = new Client();
                 setClientAttributes(res, client);
+                listOfClient.add(client);
             }
             conn.close();
         } catch (SQLException e) {

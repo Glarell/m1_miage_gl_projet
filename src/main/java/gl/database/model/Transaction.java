@@ -9,7 +9,15 @@ public class Transaction {
     private Date date_transaction;
     private int id_client;
 
-    public Transaction() { }
+    public Transaction() {
+    }
+
+    public Transaction(String contenu, Date date_transaction, int id_client) {
+        this.id_transaction=-1;
+        this.contenu = contenu;
+        this.date_transaction = date_transaction;
+        this.id_client = id_client;
+    }
 
     public Transaction(int id_transaction, String contenu, Date date_transaction, int id_client) {
         this.id_transaction = id_transaction;

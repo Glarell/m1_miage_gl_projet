@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 public class InscriptionChoice extends ChoicesAbstract {
 
-    public InscriptionChoice(){
+    public InscriptionChoice() {
 
     }
 
@@ -41,12 +41,12 @@ public class InscriptionChoice extends ChoicesAbstract {
             card = Application.askForLine("Mauvaise saisie !\nSaisir numéro carte bancaire (16 chiffres) :");
         }
         // enregistrement du client
-        Client client = new Client(lastname,firstname,address,tel,email,password,card);
+        Client client = new Client(lastname, firstname, address, tel, email, password, card);
         try {
-            Application.currentClient=ClientDAO.registrerClient(client);
+            Application.currentClient = ClientDAO.registrerClient(client);
         } catch (SQLException throwables) {
             System.out.println("Erreur : champs incompatables selon saisies !");
-            this.execute(scanner,user);
+            this.execute(scanner, user);
         }
         user.setState(Application.STATE_CONNECTED);
         return Application.RETURN_SUCCESS;

@@ -15,6 +15,17 @@ public class Client {
     public Client() {
     }
 
+    public Client(int id,String nom, String prenom, String adresse, String telephone, String email, String mdp, String carte) {
+        this.id_client=id;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.adresse = adresse;
+        this.telephone = telephone;
+        this.email = email;
+        this.mdp = mdp;
+        this.carte = carte;
+    }
+
     public Client(String nom, String prenom, String adresse, String telephone, String email, String mdp, String carte) {
         this.nom = nom;
         this.prenom = prenom;
@@ -33,16 +44,16 @@ public class Client {
         return nom;
     }
 
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
     public int getId_client() {
         return id_client;
     }
 
     public void setId_client(int id_client) {
         this.id_client = id_client;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
     }
 
     public String getPrenom() {

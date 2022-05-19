@@ -227,3 +227,5 @@ insert into VariableApplication (nom, valeur)
 values ('délai attente', 15);
 insert into VariableApplication (nom, valeur)
 values ('frais supplémentaires réservation', 30);
+
+SET timezone=+2;

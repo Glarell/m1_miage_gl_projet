@@ -5,7 +5,7 @@ import gl.application.User;
 
 import java.util.Scanner;
 
-public class DeconnectionChoice extends ChoicesAbstract{
+public class DeconnectionChoice extends ChoicesAbstract {
     @Override
     public int execute(Scanner scanner, User user) {
         System.out.println("Me déconnecter");

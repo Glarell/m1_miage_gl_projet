@@ -1,7 +1,10 @@
 package gl.ihm;
 
 import gl.application.Application;
-import gl.commands.*;
+import gl.commands.ChoicesAbstract;
+import gl.commands.ConnexionChoice;
+import gl.commands.DeconnectionChoice;
+import gl.commands.QuitChoice;
 import gl.commands.anonymous.InscriptionChoice;
 import gl.commands.client.*;
 import gl.commands.manager.ConsultAllProfilesChoice;
@@ -10,17 +13,17 @@ import gl.commands.manager.PriceChoice;
 
 import java.util.HashMap;
 
-public class Choices{
+public class Choices {
 
-    private HashMap<Integer,String> choicesAnonymous = new HashMap<>();
-    private HashMap<Integer,String> choicesConnected = new HashMap<>();
-    private HashMap<Integer,String> choicesManager = new HashMap<>();
-    private HashMap<Integer, ChoicesAbstract> commandsAnonymous = new HashMap<>();
+    private final HashMap<Integer, String> choicesAnonymous = new HashMap<>();
+    private HashMap<Integer, String> choicesConnected = new HashMap<>();
+    private HashMap<Integer, String> choicesManager = new HashMap<>();
+    private final HashMap<Integer, ChoicesAbstract> commandsAnonymous = new HashMap<>();
     private HashMap<Integer, ChoicesAbstract> commandsConnected = new HashMap<>();
     private HashMap<Integer, ChoicesAbstract> commandsManager = new HashMap<>();
 
 
-    public Choices(){
+    public Choices() {
         choicesAnonymous.put(1, "1 - M'inscrire");
         choicesAnonymous.put(2, "2 - Me connecter");
         choicesAnonymous.put(3, "3 - Quitter l'application");
@@ -63,21 +66,21 @@ public class Choices{
         commandsManager.put(5, new QuitChoice());
     }
 
-    public void display(int state){
+    public void display(int state) {
         StringBuilder strBuilder = new StringBuilder();
-        switch(state){
-            case(Application.STATE_ANONYMOUS):
-                choicesAnonymous.forEach((k,v) ->{
+        switch (state) {
+            case (Application.STATE_ANONYMOUS):
+                choicesAnonymous.forEach((k, v) -> {
                     strBuilder.append(v).append("\n");
                 });
                 break;
-            case(Application.STATE_CONNECTED):
-                choicesConnected.forEach((k,v) -> {
+            case (Application.STATE_CONNECTED):
+                choicesConnected.forEach((k, v) -> {
                     strBuilder.append(v).append("\n");
                 });
                 break;
-            case(Application.STATE_MANAGER):
-                choicesManager.forEach((k,v) -> {
+            case (Application.STATE_MANAGER):
+                choicesManager.forEach((k, v) -> {
                     strBuilder.append(v).append("\n");
                 });
                 break;
@@ -85,13 +88,13 @@ public class Choices{
         System.out.println(strBuilder.toString());
     }
 
-    public ChoicesAbstract getFunction(int line, int state){
-        switch(state){
-            case(Application.STATE_ANONYMOUS):
-                return commandsAnonymous.getOrDefault(line,null);
-            case(Application.STATE_CONNECTED):
-                return commandsConnected.getOrDefault(line,null);
-            case(Application.STATE_MANAGER):
+    public ChoicesAbstract getFunction(int line, int state) {
+        switch (state) {
+            case (Application.STATE_ANONYMOUS):
+                return commandsAnonymous.getOrDefault(line, null);
+            case (Application.STATE_CONNECTED):
+                return commandsConnected.getOrDefault(line, null);
+            case (Application.STATE_MANAGER):
                 return commandsManager.getOrDefault(line, null);
             default:
                 return null;
