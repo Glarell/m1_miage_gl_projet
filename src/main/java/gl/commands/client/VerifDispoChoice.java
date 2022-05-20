@@ -10,10 +10,7 @@ import gl.database.dao.ReservationDAO;
 import gl.database.model.EstAssocie;
 import gl.database.model.Reservation;
 
-import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +21,6 @@ import java.util.logging.Logger;
 public class VerifDispoChoice extends ChoicesAbstract {
 
     private final Logger logger = Logger.getLogger(VerifDispoChoice.class.getName());
-
-    private String dateString;
 
     @Override
     public int execute(Scanner scanner, User user) {
@@ -66,76 +61,14 @@ public class VerifDispoChoice extends ChoicesAbstract {
      * @return la nouvelle réservation
      */
     private Reservation initReservationValue() {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         Reservation reservation = new Reservation();
-        reservation.setDate_reservation(getDate());
-        reservation.setDebut_intervalle(getDebutIntervalle());
-        reservation.setFin_intervalle(getFinIntervalle());
+        reservation.setDate_reservation(getUserDataUtils.getDate());
+        reservation.setDebut_intervalle(getUserDataUtils.getDebutIntervalle(formatter.format(reservation.getDate_reservation())));
+        reservation.setFin_intervalle(getUserDataUtils.getFinIntervalle(formatter.format(reservation.getDate_reservation())));
         reservation.setNb_prolongement(0);
         reservation.setSupplement(false);
         return reservation;
-    }
-
-    public Date getDate() {
-        Date date_reservation = null;
-        this.dateString = Application.askForLine("Saisir la date (dd-mm-yyyy) : ");
-        boolean condition = true;
-        while (condition) {
-            if (dateString.matches("\\d{2}-\\d{2}-\\d{4}")) {
-                try {
-                    date_reservation = new Date(new SimpleDateFormat("dd-MM-yyyy").parse(dateString).getTime());
-                    condition = false;
-                } catch (ParseException e) {
-                    System.out.println("La date n'est pas valide");
-                    dateString = Application.askForLine("Saisir la date (dd-mm-yyyy) : ");
-                }
-            } else {
-                System.out.println("La date saisie ne respecte pas le format dd-mm-yyyy");
-                dateString = Application.askForLine("Saisir la date (dd-mm-yyyy) : ");
-            }
-        }
-        return date_reservation;
-    }
-
-    public Time getDebutIntervalle() {
-        Time debut_intervalle = null;
-        String startTime = Application.askForLine("Saisir l'intervalle de début (hh:mm) : ");
-        boolean condition = true;
-        while (condition) {
-            if (startTime.matches("\\d{2}:\\d{2}")) {
-                try {
-                    debut_intervalle = new Time(new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(dateString + " " + startTime).getTime());
-                    condition = false;
-                } catch (ParseException e) {
-                    System.out.println("L'intervalle n'est pas valide");
-                    startTime = Application.askForLine("Saisir l'intervalle de début (hh:mm) : ");
-                }
-            } else {
-                System.out.println("L'intervalle saisi ne respecte pas le format hh:mm");
-                startTime = Application.askForLine("Saisir l'intervalle de début (hh:mm) : ");
-            }
-        }
-        return debut_intervalle;
-    }
-
-    public Time getFinIntervalle() {
-        Time fin_intervalle = null;
-        String endTime = Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ");
-        boolean condition = true;
-        while (condition) {
-            if (endTime.matches("\\d{2}:\\d{2}")) {
-                try {
-                    fin_intervalle = new Time(new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(dateString + " " + endTime).getTime());
-                    condition = false;
-                } catch (ParseException e) {
-                    System.out.println("L'intervalle n'est pas valide");
-                    endTime = Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ");
-                }
-            } else {
-                System.out.println("L'intervalle saisi ne respecte pas le format hh:mm");
-                endTime = Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ");
-            }
-        }
-        return fin_intervalle;
     }
 
     /**
