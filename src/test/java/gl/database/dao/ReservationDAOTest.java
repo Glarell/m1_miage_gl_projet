@@ -76,7 +76,7 @@ public class ReservationDAOTest {
                 0, false, estAssocie.getId_estAssocie(), 1);
         ReservationDAO.registrerReservationWithId(reservation);
 
-        assertThat(ReservationDAO.isExistingReservationFromSameUser(999, reservation))
+        assertThat(ReservationDAO.hasExistingReservationFromSameUser(999, reservation))
                 .isFalse();
 
         ReservationDAO.deleteOldReservation(999);
@@ -99,11 +99,35 @@ public class ReservationDAOTest {
                 0, false, estAssocie.getId_estAssocie(), 1);
         ReservationDAO.registrerReservationWithId(reservation2);
 
-        assertThat(ReservationDAO.isExistingReservationFromSameUser(999, reservation))
+        assertThat(ReservationDAO.hasExistingReservationFromSameUser(999, reservation))
                 .isTrue();
 
         ReservationDAO.deleteOldReservation(999);
         ReservationDAO.deleteOldReservation(998);
+    }
+
+    @Test
+    public void testGetExistingReservationFromSameUser() throws SQLException, ParseException {
+        EstAssocie estAssocie = EstAssocieDAO.getEstAssocieByClient(999).get(0);
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        Date date_reservation = new Date(format.parse("01-01-2022 00:00").getTime());
+
+        Reservation reservation = new Reservation(999, date_reservation,
+                new Time(format.parse("01-01-2022 9:00").getTime()),
+                new Time(format.parse("01-01-2022 9:30").getTime()),
+                0, false, estAssocie.getId_estAssocie(), 1);
+        ReservationDAO.registrerReservationWithId(reservation);
+
+        Reservation reservation2 = new Reservation(998, date_reservation,
+                new Time(format.parse("01-01-2022 10:00").getTime()),
+                new Time(format.parse("01-01-2022 10:30").getTime()),
+                0, false, estAssocie.getId_estAssocie(), 1);
+
+        assertThat(ReservationDAO.getExistingReservationFromSameUser(999, reservation2))
+                .extracting(Reservation::getId_reservation)
+                .isEqualTo(999);
+
+        ReservationDAO.deleteOldReservation(999);
     }
 
     @Test
@@ -118,7 +142,7 @@ public class ReservationDAOTest {
                 0, false, estAssocie.getId_estAssocie(), 1);
         ReservationDAO.registrerReservationWithId(reservation);
 
-        assertThat(ReservationDAO.isExistingReservation(date_reservation, new Time(format.parse("01-01-2022 09:50").getTime()),
+        assertThat(ReservationDAO.hasExistingReservation(date_reservation, new Time(format.parse("01-01-2022 09:50").getTime()),
                 new Time(format.parse("01-01-2022 10:10").getTime()), 1))
                 .isTrue();
 
@@ -130,7 +154,7 @@ public class ReservationDAOTest {
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
         Date date_reservation = new Date(format.parse("01-01-1999 00:00").getTime());
 
-        assertThat(ReservationDAO.isExistingReservation(date_reservation, new Time(format.parse("01-01-1999 09:50").getTime()),
+        assertThat(ReservationDAO.hasExistingReservation(date_reservation, new Time(format.parse("01-01-1999 09:50").getTime()),
                 new Time(format.parse("01-01-1999 10:10").getTime()), 1))
                 .isFalse();
     }
