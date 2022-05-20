@@ -69,7 +69,7 @@ public class ReservationDAO {
      * @param reservation la réservation de référence
      * @return vrai s'il existe une réservation
      */
-    public static boolean isExistingReservationFromSameUser(int id_client, Reservation reservation) {
+    public static boolean hasExistingReservationFromSameUser(int id_client, Reservation reservation) {
         boolean result = false;
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         try {
@@ -91,6 +91,34 @@ public class ReservationDAO {
     }
 
     /**
+     * Recherche de la réservation du même client une heure précédant le début de la réservation
+     *
+     * @param id_client   l'identifiant du client
+     * @param reservation la réservation de référence
+     * @return la réservation
+     */
+    public static Reservation getExistingReservationFromSameUser(int id_client, Reservation reservation) {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        Reservation existing_reservation = new Reservation();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT reservation.* FROM reservation" +
+                    " INNER JOIN estassocie e ON Reservation.id_estAssocie = e.id_estassocie" +
+                    " WHERE id_client = ? AND date_reservation = ? AND fin_intervalle >= ? AND fin_intervalle <= ?");
+            stmt.setInt(1, id_client);
+            stmt.setDate(2, reservation.getDate_reservation());
+            stmt.setTime(3, Time.valueOf(reservation.getDebut_intervalle().toLocalTime().minusHours(1)));
+            stmt.setTime(4, reservation.getDebut_intervalle());
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                setReservationAttributes(res, existing_reservation);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return existing_reservation;
+    }
+
+    /**
      * Recherche de réservations existantes pour une date donnée, un intervalle donné et une borne donnée
      *
      * @param date_reservation la date de recherche
@@ -98,7 +126,7 @@ public class ReservationDAO {
      * @param fin_intervalle   la fin de l'intervalle de recherche
      * @return vrai s'il existe une réservation
      */
-    public static boolean isExistingReservation(Date date_reservation, Time debut_intervalle, Time fin_intervalle, int id_borne) {
+    public static boolean hasExistingReservation(Date date_reservation, Time debut_intervalle, Time fin_intervalle, int id_borne) {
         boolean result = false;
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         try {
