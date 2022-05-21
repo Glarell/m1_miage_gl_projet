@@ -15,7 +15,7 @@ public class ReservationDAO {
         try {
             PreparedStatement stmt = conn.prepareStatement("DELETE FROM reservation where id_reservation = ?");
             stmt.setInt(1, id);
-            stmt.executeQuery();
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
