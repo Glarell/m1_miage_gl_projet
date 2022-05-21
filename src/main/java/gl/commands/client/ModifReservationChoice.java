@@ -54,7 +54,7 @@ public class ModifReservationChoice extends ChoicesAbstract {
                     break;
                 case 3:
                     EstAssocie res = modifPlaqueReservation(choice);
-                    ReservationDAO.deleteReservationById(menu_choice);
+                    ReservationDAO.deleteReservationById(choice);
                     Reservation temp = indices.get(choice);
                     temp.setId_estAssocie(res.getId_estAssocie());
                     try{
