@@ -22,6 +22,39 @@ public class ClientDAO {
         return false;
     }
 
+    /**
+     * Récupération du nombre de réservation/abonnement associé à un client
+     *
+     * @param id_client l'identifiant du client
+     * @return le nombre réservation
+     */
+    public static int getNbReservationAndAbonnement(int id_client) {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        int nb = 0;
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT nbAbonnement + nbReservation" +
+                    " FROM (SELECT count(*) nbAbonnement" +
+                    "      FROM Abonnement" +
+                    "      WHERE (date_trunc('month', date_abonnement) + interval '1 month' - interval '1 day')::date >= current_date" +
+                    "        AND id_client = ?) AS abo" +
+                    "         CROSS JOIN" +
+                    "     (SELECT count(*) AS nbReservation" +
+                    "      FROM Reservation" +
+                    "               INNER JOIN estassocie e ON Reservation.id_estAssocie = e.id_estassocie" +
+                    "      WHERE date_reservation >= current_date" +
+                    "        AND id_client = ?) AS res");
+            stmt.setInt(1, id_client);
+            stmt.setInt(2, id_client);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                nb = res.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return nb;
+    }
+
     public static Client registrerClient(Client client) throws SQLException {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO Client (nom,prenom,adresse,telephone,email,mdp,carte) VALUES (?,?,?,?,?,?,?)");
