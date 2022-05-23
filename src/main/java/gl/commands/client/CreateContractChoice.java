@@ -5,6 +5,7 @@ import gl.application.User;
 import gl.commands.ChoicesAbstract;
 import gl.database.dao.AbonnementDAO;
 import gl.database.dao.BorneDAO;
+import gl.database.dao.ClientDAO;
 import gl.database.model.Abonnement;
 
 import java.sql.SQLException;
@@ -16,6 +17,12 @@ public class CreateContractChoice extends ChoicesAbstract {
     @Override
     public int execute(Scanner scanner, User user) {
         System.out.println("[------Conclure un contrat mensuel------]");
+        //Vérification de la limite d'abonnements / réservations
+        if (ClientDAO.getNbReservationAndAbonnement(Application.currentClient.getId_client()) >= 3) {
+            System.out.println("Vous avez atteint le nombre maximum de réservations et d'abonnements");
+            return Application.RETURN_FAILED;
+        }
+
         Abonnement abonnement = this.initAbonnementValue();
 
         if (abonnement.getDebut_intervalle().compareTo(abonnement.getFin_intervalle()) >= 0) {
