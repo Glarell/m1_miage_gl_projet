@@ -6,7 +6,9 @@ import gl.commands.ChoicesAbstract;
 import gl.database.dao.AbonnementDAO;
 import gl.database.dao.BorneDAO;
 import gl.database.dao.ClientDAO;
+import gl.database.dao.TransactionDAO;
 import gl.database.model.Abonnement;
+import gl.database.model.Transaction;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -47,6 +49,10 @@ public class CreateContractChoice extends ChoicesAbstract {
             abonnement.setId_borne(this.getBorne(bornes_dispos));
             try {
                 AbonnementDAO.registrerAbonnement(abonnement);
+                //Sauvegarde de la transaction de l'utilisateur
+                TransactionDAO.registrerTransaction(new Transaction("Création d'un abonnement mensuel le " +
+                        new SimpleDateFormat("MM-yyyy").format(abonnement.getDate_abonnement()),
+                        Application.currentClient.getId_client()));
             } catch (SQLException e) {
                 System.out.println("Erreur : champs incompatables selon saisies !");
                 this.execute(scanner, user);
@@ -80,6 +86,10 @@ public class CreateContractChoice extends ChoicesAbstract {
             if (!(AbonnementDAO.hasExistingAbonnement(newAbonnement.getDate_abonnement(), oldReservation.getFin_intervalle(),
                     newAbonnement.getFin_intervalle(), oldReservation.getId_borne()))) {
                 AbonnementDAO.updateMergeAbonnement(oldReservation, newAbonnement.getFin_intervalle());
+                //Sauvegarde de la transaction de l'utilisateur
+                TransactionDAO.registrerTransaction(new Transaction("Modification de l'abonnement mensuel du " +
+                        new SimpleDateFormat("MM-yyyy").format(oldReservation.getDate_abonnement()),
+                        Application.currentClient.getId_client()));
             } else {
                 System.out.println("La borne ou vous avez réservé est occupé pendant l'intervalle " + oldReservation.getFin_intervalle() + " - " + newAbonnement.getFin_intervalle());
                 userDecision = false;
