@@ -1,6 +1,8 @@
 package gl.database.model;
 
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class Transaction {
 
@@ -16,6 +18,13 @@ public class Transaction {
         this.id_transaction=-1;
         this.contenu = contenu;
         this.date_transaction = date_transaction;
+        this.id_client = id_client;
+    }
+
+    public Transaction(String contenu, int id_client) {
+        this.id_transaction=-1;
+        this.contenu = contenu;
+        this.date_transaction = new Date(System.currentTimeMillis());
         this.id_client = id_client;
     }
 
