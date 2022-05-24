@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 public class ReservationDAO {
 
-
     public static ArrayList<Reservation> getAllReservationByIdClient(int id_client) {
         ArrayList<Reservation> list = new ArrayList<>();
         Connection conn = ConnectionPostgre.getInstance().getConnection();
@@ -84,7 +83,7 @@ public class ReservationDAO {
         }
         return reservation;
     }
-
+    
     public static void updateReservation(Reservation reservation) {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         try {
