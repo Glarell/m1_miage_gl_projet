@@ -84,4 +84,8 @@ public class Application {
             return RETURN_FAILED;
         }
     }
+
+    public static int getCurrentClientId() {
+        return currentClient.getId_client();
+    }
 }
