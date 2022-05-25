@@ -2,6 +2,7 @@ package gl.database.dao;
 
 import gl.database.ConnectionPostgre;
 import gl.database.model.Notification;
+import gl.database.model.Reservation;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -53,6 +54,24 @@ public class NotificationDAO {
             e.printStackTrace();
         }
         return listOfNotification;
+    }
+
+    public static void createNotificationReservation(Reservation reservation) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("select e.id_client from reservation inner join estassocie e on e.id_estassocie = reservation.id_estassocie\n" +
+                "        where id_reservation=?");
+        stmt.setInt(1,reservation.getId_reservation());
+        ResultSet res = stmt.executeQuery();
+        //recuperer id
+        while (res.next()) {
+            int id = res.getInt(1);
+            Notification notification = new Notification(String.format("[Notification-Réservation]\nL'identifiant de votre réservation est le suivant : %s%n",reservation.getId_reservation()),id,"Mail");
+            NotificationDAO.insertNewNotification(notification);
+            notification.setId_typeNotification("SMS");
+            NotificationDAO.insertNewNotification(notification);
+            System.out.println(notification);
+        }
+
     }
 
     /**
