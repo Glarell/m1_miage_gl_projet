@@ -2,6 +2,7 @@ package gl.database.dao;
 
 import gl.database.ConnectionPostgre;
 import gl.database.model.Abonnement;
+import gl.database.model.Reservation;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -86,6 +87,31 @@ public class AbonnementDAO {
             e.printStackTrace();
         }
         return result;
+    }
+
+    /**
+     * Récupération de l'abonnement à la date courante
+     *
+     * @param id_client l'id du client qui a fait l'abonnement
+     * @return l'abonnement correspondant
+     */
+    public static Abonnement getAbonnementFromCurrentDate(int id_client) {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        Abonnement abonnement = new Abonnement();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT Abonnement.* FROM Abonnement" +
+                    " WHERE id_client = ? AND date_abonnement <= current_date" +
+                    " AND current_date <= (date_trunc('month', date_abonnement) + interval '1 month' - interval '1 day')::date" +
+                    " AND debut_intervalle <= current_time AND current_time <= fin_intervalle");
+            stmt.setInt(1, id_client);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                setAbonnementAttributes(res, abonnement);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return abonnement;
     }
 
     /**
