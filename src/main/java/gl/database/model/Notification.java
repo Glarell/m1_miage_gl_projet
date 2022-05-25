@@ -17,6 +17,12 @@ public class Notification {
         this.id_typeNotification = id_typeNotification;
     }
 
+    public Notification(String contenu, int id_client, String id_typeNotification) {
+        this.contenu = contenu;
+        this.id_client = id_client;
+        this.id_typeNotification = id_typeNotification;
+    }
+
     public int getId_notification() {
         return id_notification;
     }
@@ -51,6 +57,6 @@ public class Notification {
 
     @Override
     public String toString() {
-        return String.format("'%s', '%s', '%s', '%s'", id_notification, contenu, id_client, id_typeNotification);
+        return contenu;
     }
 }
