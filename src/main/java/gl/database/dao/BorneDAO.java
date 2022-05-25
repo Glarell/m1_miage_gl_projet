@@ -91,6 +91,27 @@ public class BorneDAO {
         return listOfBorneFromReservation;
     }
 
+    public static List<Integer> getAllBorneFromDateDispoUpdate(Date date, Time int1, Time int2,int id) {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        List<Integer> listOfBorne = new ArrayList<>();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT id_borne FROM Reservation EXCEPT SELECT id_borne FROM Reservation where id_reservation != ? and date_reservation = ? and not ((? > fin_intervalle and ? > fin_intervalle) or (? < debut_intervalle and ? < debut_intervalle));");
+            stmt.setInt(1,id);
+            stmt.setDate(2, date);
+            stmt.setTime(3, int1);
+            stmt.setTime(4, int2);
+            stmt.setTime(5, int1);
+            stmt.setTime(6, int2);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                listOfBorne.add(res.getInt(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return listOfBorne;
+    }
+
     /**
      * Mise à jour de l'état d'une borne dans la BDD
      *

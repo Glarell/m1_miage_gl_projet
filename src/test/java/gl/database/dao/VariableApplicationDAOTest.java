@@ -16,7 +16,8 @@ public class VariableApplicationDAOTest {
         assertThat(listOfVariableApplication)
                 .extracting(VariableApplication::getNom)
                 .contains(VariableApplication.WAITING_TIME)
-                .hasSize(1);
+                .contains(VariableApplication.ADDITIONAL_COST)
+                .hasSize(2);
     }
 
     @Test

@@ -74,7 +74,7 @@ public class VerifDispoChoice extends ChoicesAbstract {
     /**
      * @return vrai si l'utilisateur souhaite réserver avec une voiture louée ou empruntée
      */
-    public boolean isVoitureEmprunteOuLoue() {
+    public static boolean isVoitureEmprunteOuLoue() {
         String isEmprunte = Application.askForLine("Réservation avec voiture louée ou empruntée (oui/non) : ");
         while (!isEmprunte.matches("^(?:oui|non)$")) {
             isEmprunte = Application.askForLine("Mauvaise saisie !\nRéservation avec voiture louée ou empruntée (oui/non) :");
@@ -87,7 +87,7 @@ public class VerifDispoChoice extends ChoicesAbstract {
      *
      * @return l'id de la nouvelle association temporaire
      */
-    public int generateNewEstAssocieTemporaire() {
+    public static int generateNewEstAssocieTemporaire() {
         int new_id_estAssocie = -1;
         String plaque_id = Application.askForLine("Saisir numéro d'immatriculation : ");
         while (!plaque_id.matches("[A-Z]{2}-\\d{3}-[A-Z]{2}")) {
