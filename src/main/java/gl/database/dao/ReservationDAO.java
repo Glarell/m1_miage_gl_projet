@@ -1,6 +1,7 @@
 package gl.database.dao;
 
 import gl.database.ConnectionPostgre;
+import gl.database.model.Notification;
 import gl.database.model.Reservation;
 
 import java.sql.*;
@@ -13,7 +14,7 @@ public class ReservationDAO {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         Reservation reservation = new Reservation();
         try {
-            PreparedStatement stmt = conn.prepareStatement("select id_reservation,date_reservation,debut_intervalle,fin_intervalle,nb_prolongement,issupplement,e.id_estassocie,id_borne from reservation" +
+            PreparedStatement stmt = conn.prepareStatement("select * from reservation" +
                     " inner join estassocie e on e.id_estassocie = reservation.id_estassocie" +
                     " where e.id_client = ?" +
                     " AND (reservation.date_reservation>=CURRENT_DATE)" +
@@ -97,6 +98,7 @@ public class ReservationDAO {
         ReservationDAO.getReservationAttributes(stmt, reservation);
         stmt.setInt(8, reservation.getId_reservation());
         stmt.executeUpdate();
+        NotificationDAO.createNotificationReservation(reservation);
     }
 
     /**
@@ -219,6 +221,7 @@ public class ReservationDAO {
             stmt.setTime(1, reservation.getFin_intervalle());
             stmt.setInt(2, reservation.getId_reservation());
             stmt.executeUpdate();
+            NotificationDAO.createNotificationReservation(reservation);
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -247,6 +250,7 @@ public class ReservationDAO {
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO Reservation (date_reservation, debut_intervalle," +
                 " fin_intervalle, nb_prolongement, isSupplement, id_estAssocie, id_borne) VALUES (?,?,?,?,?,?,?)");
         ReservationDAO.getReservationAttributes(stmt, reservation);
+        NotificationDAO.createNotificationReservation(reservation);
         stmt.executeUpdate();
     }
 
