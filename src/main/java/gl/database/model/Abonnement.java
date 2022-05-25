@@ -14,6 +14,7 @@ public class Abonnement {
 
     public Abonnement() {
     }
+
     public Abonnement(Date date_abonnement, Time debut_intervalle, Time fin_intervalle, int id_client, int id_borne) {
         this.date_abonnement = date_abonnement;
         this.debut_intervalle = debut_intervalle;
@@ -78,4 +79,10 @@ public class Abonnement {
     public void setId_borne(int id_borne) {
         this.id_borne = id_borne;
     }
+
+    @Override
+    public String toString() {
+        return String.format("'%s', '%s', '%s', '%s', '%s', '%s'", id_abonnement, date_abonnement, debut_intervalle, fin_intervalle, id_client, id_borne);
+    }
+
 }

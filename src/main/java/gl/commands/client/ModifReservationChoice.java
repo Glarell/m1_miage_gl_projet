@@ -12,16 +12,11 @@ import gl.database.model.Reservation;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ModifReservationChoice extends ChoicesAbstract {
-    private String dateString;
-    private Date date;
-    private Time int1;
-    private Time int2;
 
     @Override
     public int execute(Scanner scanner, User user) {
@@ -57,9 +52,9 @@ public class ModifReservationChoice extends ChoicesAbstract {
                     ReservationDAO.deleteReservationById(choice);
                     Reservation temp = indices.get(choice);
                     temp.setId_estAssocie(res.getId_estAssocie());
-                    try{
+                    try {
                         ReservationDAO.registrerReservation(temp);
-                    }catch (SQLException e){
+                    } catch (SQLException e) {
                         e.printStackTrace();
                     }
                     break;
@@ -71,13 +66,14 @@ public class ModifReservationChoice extends ChoicesAbstract {
     }
 
     public void modifDateReservation(int id) {
-        Date date = VerifDispoChoice.getDate();
-        Time int1 = VerifDispoChoice.getInt1(new SimpleDateFormat("dd-MM-yyy").format(date));
-        Time int2 = VerifDispoChoice.getInt2(new SimpleDateFormat("dd-MM-yyy").format(date));
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = getUserDataUtils.getDate();
+        Time int1 = getUserDataUtils.getDebutIntervalle(formatter.format(date));
+        Time int2 = getUserDataUtils.getFinIntervalle(formatter.format(date));
         while (int1.compareTo(int2) >= 0) {
             System.out.println("Les intervalles ne sont pas correctement renseignés");
-            int1 = VerifDispoChoice.getInt1(new SimpleDateFormat("dd-MM-yyy").format(date));
-            int2 = VerifDispoChoice.getInt2(new SimpleDateFormat("dd-MM-yyy").format(date));
+            int1 = getUserDataUtils.getDebutIntervalle(formatter.format(date));
+            int2 = getUserDataUtils.getFinIntervalle(formatter.format(date));
         }
         ArrayList<Integer> bornes_dispos = (ArrayList<Integer>) BorneDAO.getAllBorneFromDateDispoUpdate(date, int1, int2, id);
         if (bornes_dispos.size() > 0) {
@@ -94,7 +90,7 @@ public class ModifReservationChoice extends ChoicesAbstract {
                             ReservationDAO.updateReservationDate(id, date, int1, int2);
                         }
                     }
-                    if (condition.get()){
+                    if (condition.get()) {
                         System.out.println("Aucune borne associé à ce numéro");
                     }
                 } catch (NumberFormatException e) {
@@ -104,10 +100,10 @@ public class ModifReservationChoice extends ChoicesAbstract {
         }
     }
 
-    public EstAssocie modifPlaqueReservation(int id){
-        while (true){
+    public EstAssocie modifPlaqueReservation(int id) {
+        while (true) {
             if (VerifDispoChoice.isVoitureEmprunteOuLoue()) {
-                 return EstAssocieDAO.getEstAssocieById(VerifDispoChoice.generateNewEstAssocieTemporaire());
+                return EstAssocieDAO.getEstAssocieById(VerifDispoChoice.generateNewEstAssocieTemporaire());
             } else {
                 ArrayList<EstAssocie> estAssocies = (ArrayList<EstAssocie>) EstAssocieDAO.getEstAssocieByClient(Application.currentClient.getId_client());
                 if (estAssocies.size() > 0) {

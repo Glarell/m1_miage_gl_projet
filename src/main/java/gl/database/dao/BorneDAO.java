@@ -58,28 +58,37 @@ public class BorneDAO {
     /**
      * Récupération de toutes les bornes disponibles à une date et un intervalle donné
      *
-     * @param date la date de recherche
-     * @param int1 intervalle de début
-     * @param int2 intervalle de fin
+     * @param date             la date de recherche
+     * @param debut_intervalle intervalle de début
+     * @param fin_intervalle   intervalle de fin
      */
-    public static List<Integer> getAllBorneFromDateDispo(Date date, Time int1, Time int2) {
+    public static List<Integer> getAllBorneFromDateDispo(Date date, Time debut_intervalle, Time fin_intervalle) {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
-        List<Integer> listOfBorne = new ArrayList<>();
+        List<Integer> listOfBorneFromReservation = new ArrayList<>();
+        List<Integer> listOfBorneFromAbonnement = new ArrayList<>();
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT id_borne FROM Reservation EXCEPT SELECT id_borne FROM Reservation where date_reservation = ? and not ((? > fin_intervalle and ? > fin_intervalle) or (? < debut_intervalle and ? < debut_intervalle));");
-            stmt.setDate(1, date);
-            stmt.setTime(2, int1);
-            stmt.setTime(3, int2);
-            stmt.setTime(4, int1);
-            stmt.setTime(5, int2);
-            ResultSet res = stmt.executeQuery();
-            while (res.next()) {
-                listOfBorne.add(res.getInt(1));
+            PreparedStatement stmtReservation = conn.prepareStatement("SELECT id_borne FROM Borne " +
+                    "EXCEPT SELECT id_borne FROM Reservation where date_reservation = ? and not ((? > fin_intervalle and ? > fin_intervalle) " +
+                    "or (? < debut_intervalle and ? < debut_intervalle))");
+            BorneDAO.getAttributesForDateDispo(stmtReservation, date, debut_intervalle, fin_intervalle);
+            ResultSet resReservation = stmtReservation.executeQuery();
+            while (resReservation.next()) {
+                listOfBorneFromReservation.add(resReservation.getInt(1));
             }
+
+            PreparedStatement stmtAbonnement = conn.prepareStatement("SELECT id_borne FROM Borne " +
+                    "EXCEPT SELECT id_borne FROM Abonnement where date_abonnement = ? and not ((? > fin_intervalle and ? > fin_intervalle) " +
+                    "or (? < debut_intervalle and ? < debut_intervalle))");
+            BorneDAO.getAttributesForDateDispo(stmtAbonnement, date, debut_intervalle, fin_intervalle);
+            ResultSet resAbonnement = stmtAbonnement.executeQuery();
+            while (resAbonnement.next()) {
+                listOfBorneFromAbonnement.add(resAbonnement.getInt(1));
+            }
+            listOfBorneFromReservation.retainAll(listOfBorneFromAbonnement);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return listOfBorne;
+        return listOfBorneFromReservation;
     }
 
     public static List<Integer> getAllBorneFromDateDispoUpdate(Date date, Time int1, Time int2,int id) {
@@ -141,6 +150,23 @@ public class BorneDAO {
         stmt.setString(1, id_etatBorne);
         stmt.setInt(2, borne.getId_borne());
         borne.setId_etatBorne(id_etatBorne);
+    }
+
+    /**
+     * Affectation des données dans la requête
+     *
+     * @param stmt             la requête
+     * @param date             la date de la recherche
+     * @param debut_intervalle le début de l'intervalle de la recherche
+     * @param fin_intervalle   la fin de l'intervalle de la recherche
+     * @throws SQLException renvoie une exception
+     */
+    private static void getAttributesForDateDispo(PreparedStatement stmt, Date date, Time debut_intervalle, Time fin_intervalle) throws SQLException {
+        stmt.setDate(1, date);
+        stmt.setTime(2, debut_intervalle);
+        stmt.setTime(3, fin_intervalle);
+        stmt.setTime(4, debut_intervalle);
+        stmt.setTime(5, fin_intervalle);
     }
 
 }

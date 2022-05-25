@@ -83,7 +83,135 @@ public class ReservationDAO {
         }
         return reservation;
     }
-    
+
+    /**
+     * Insertion d'une réservation dans la BDD
+     *
+     * @param reservation la réservation
+     * @throws SQLException renvoie une exception
+     */
+    public static void registrerReservationWithId(Reservation reservation) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO Reservation (date_reservation, debut_intervalle," +
+                " fin_intervalle, nb_prolongement, isSupplement, id_estAssocie, id_borne, id_reservation) VALUES (?,?,?,?,?,?,?,?)");
+        ReservationDAO.getReservationAttributes(stmt, reservation);
+        stmt.setInt(8, reservation.getId_reservation());
+        stmt.executeUpdate();
+    }
+
+    /**
+     * Recherche de réservations existantes du même client une heure précédant le début de la réservation
+     *
+     * @param id_client   l'identifiant du client
+     * @param reservation la réservation de référence
+     * @return vrai s'il existe une réservation
+     */
+    public static boolean hasExistingReservationFromSameUser(int id_client, Reservation reservation) {
+        boolean result = false;
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT count(*) FROM reservation" +
+                    " INNER JOIN estassocie e ON Reservation.id_estAssocie = e.id_estassocie" +
+                    " WHERE id_client = ? AND date_reservation = ? AND fin_intervalle >= ? AND fin_intervalle <= ?");
+            stmt.setInt(1, id_client);
+            stmt.setDate(2, reservation.getDate_reservation());
+            stmt.setTime(3, Time.valueOf(reservation.getDebut_intervalle().toLocalTime().minusHours(1)));
+            stmt.setTime(4, reservation.getDebut_intervalle());
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                result = res.getInt(1) != 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * Recherche de la réservation du même client une heure précédant le début de la réservation
+     *
+     * @param id_client   l'identifiant du client
+     * @param reservation la réservation de référence
+     * @return la réservation
+     */
+    public static Reservation getExistingReservationFromSameUser(int id_client, Reservation reservation) {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        Reservation existing_reservation = new Reservation();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT reservation.* FROM reservation" +
+                    " INNER JOIN estassocie e ON Reservation.id_estAssocie = e.id_estassocie" +
+                    " WHERE id_client = ? AND date_reservation = ? AND fin_intervalle >= ? AND fin_intervalle <= ?");
+            stmt.setInt(1, id_client);
+            stmt.setDate(2, reservation.getDate_reservation());
+            stmt.setTime(3, Time.valueOf(reservation.getDebut_intervalle().toLocalTime().minusHours(1)));
+            stmt.setTime(4, reservation.getDebut_intervalle());
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                setReservationAttributes(res, existing_reservation);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return existing_reservation;
+    }
+
+    /**
+     * Recherche de réservations existantes pour une date donnée, un intervalle donné et une borne donnée
+     *
+     * @param date_reservation la date de recherche
+     * @param debut_intervalle le début de l'intervalle de recherche
+     * @param fin_intervalle   la fin de l'intervalle de recherche
+     * @return vrai s'il existe une réservation
+     */
+    public static boolean hasExistingReservation(Date date_reservation, Time debut_intervalle, Time fin_intervalle, int id_borne) {
+        boolean result = false;
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT count(*) FROM reservation" +
+                    " WHERE date_reservation = ? AND debut_intervalle >= ? AND debut_intervalle <= ? AND id_borne = ?");
+            stmt.setDate(1, date_reservation);
+            stmt.setTime(2, debut_intervalle);
+            stmt.setTime(3, fin_intervalle);
+            stmt.setInt(4, id_borne);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                result = res.getInt(1) != 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * Mise à jour d'une réservation après une fusion
+     *
+     * @param reservation    la réservation à modifier
+     * @param fin_intervalle la nouvelle fin de la réservation
+     * @throws SQLException renvoie une exception
+     */
+    public static void updateMergeReservation(Reservation reservation, Time fin_intervalle) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("UPDATE Reservation SET fin_intervalle = ? WHERE id_reservation = ?;");
+        stmt.setTime(1, fin_intervalle);
+        stmt.setInt(2, reservation.getId_reservation());
+        stmt.executeUpdate();
+    }
+
+
+    /**
+     * Suppression d'une réservation dans la BDD
+     *
+     * @param id_reservation l'id de la réservation à supprimer
+     * @throws SQLException renvoie une exception
+     */
+    public static void deleteOldReservation(int id_reservation) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM Reservation WHERE id_reservation = ?");
+        stmt.setInt(1, id_reservation);
+        stmt.executeUpdate();
+    }
+
     public static void updateReservation(Reservation reservation) {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         try {
@@ -114,19 +242,14 @@ public class ReservationDAO {
         return reservations;
     }
 
-    public static Reservation registrerReservation(Reservation reservation) throws SQLException {
+    public static void registrerReservation(Reservation reservation) throws SQLException {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO Reservation (date_reservation,debut_intervalle,fin_intervalle,nb_prolongement,isSupplement,id_estAssocie,id_borne) VALUES (?,?,?,?,?,?,?)");
-        stmt.setDate(1, reservation.getDate_reservation());
-        stmt.setTime(2, reservation.getDebut_intervalle());
-        stmt.setTime(3, reservation.getFin_intervalle());
-        stmt.setInt(4, reservation.getNb_prolongement());
-        stmt.setBoolean(5, reservation.isSupplement());
-        stmt.setInt(6, reservation.getId_estAssocie());
-        stmt.setInt(7, reservation.getId_borne());
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO Reservation (date_reservation, debut_intervalle," +
+                " fin_intervalle, nb_prolongement, isSupplement, id_estAssocie, id_borne) VALUES (?,?,?,?,?,?,?)");
+        ReservationDAO.getReservationAttributes(stmt, reservation);
         stmt.executeUpdate();
-        return reservation;
     }
+
 
     private static void setReservationAttributes(ResultSet res, Reservation reservation) throws SQLException {
         reservation.setId_reservation(res.getInt(1));
@@ -137,5 +260,22 @@ public class ReservationDAO {
         reservation.setSupplement(res.getBoolean(6));
         reservation.setId_estAssocie(res.getInt(7));
         reservation.setId_borne(res.getInt(8));
+    }
+
+    /**
+     * Affectation des données dans la requête
+     *
+     * @param stmt        la requête
+     * @param reservation la réservation
+     * @throws SQLException renvoie une exception
+     */
+    private static void getReservationAttributes(PreparedStatement stmt, Reservation reservation) throws SQLException {
+        stmt.setDate(1, reservation.getDate_reservation());
+        stmt.setTime(2, reservation.getDebut_intervalle());
+        stmt.setTime(3, reservation.getFin_intervalle());
+        stmt.setInt(4, reservation.getNb_prolongement());
+        stmt.setBoolean(5, reservation.isSupplement());
+        stmt.setInt(6, reservation.getId_estAssocie());
+        stmt.setInt(7, reservation.getId_borne());
     }
 }

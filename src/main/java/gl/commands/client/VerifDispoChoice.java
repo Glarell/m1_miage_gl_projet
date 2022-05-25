@@ -10,10 +10,7 @@ import gl.database.dao.ReservationDAO;
 import gl.database.model.EstAssocie;
 import gl.database.model.Reservation;
 
-import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,83 +22,53 @@ public class VerifDispoChoice extends ChoicesAbstract {
 
     private final Logger logger = Logger.getLogger(VerifDispoChoice.class.getName());
 
-    private String dateString;
-    private Date date;
-    private Time int1;
-    private Time int2;
-
     @Override
     public int execute(Scanner scanner, User user) {
         System.out.println("[------Disponibilité des bornes------]");
-        Date date = getDate();
-        Time int1 = getInt1(new SimpleDateFormat("dd-MM-yyy").format(date));
-        Time int2 = getInt2(new SimpleDateFormat("dd-MM-yyy").format(date));
-        if (int1.compareTo(int2) >= 0) {
+        Reservation reservation = this.initReservationValue();
+        //Vérification de l'intervalle saisie par l'utilisateur
+        if (reservation.getDebut_intervalle().compareTo(reservation.getFin_intervalle()) >= 0) {
             System.out.println("Les intervalles ne sont pas bien renseignés !");
             return Application.RETURN_FAILED;
         }
-        ArrayList<Integer> bornes_dispos = (ArrayList<Integer>) BorneDAO.getAllBorneFromDateDispo(date, int1, int2);
+
+        //Récupération des bornes disponibles pour les données saisies par l'utilisateur
+        ArrayList<Integer> bornes_dispos = (ArrayList<Integer>) BorneDAO.getAllBorneFromDateDispo(reservation.getDate_reservation(),
+                reservation.getDebut_intervalle(), reservation.getFin_intervalle());
+
+        //Recherche d'une réservation existante
+        if (ReservationDAO.hasExistingReservationFromSameUser(Application.currentClient.getId_client(), reservation)) {
+            try {
+                return VerifDispoChoice.doesUserWantToMergeReservation(reservation) ? Application.RETURN_SUCCESS : Application.RETURN_FAILED;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
         if (bornes_dispos.size() > 0) {
             System.out.println("Voici la ou les borne(s) disponible(s) :");
             bornes_dispos.forEach(x -> System.out.printf("-- Borne N°%d%n", x));
-            reserver(bornes_dispos, date, int1, int2);
+            reserver(bornes_dispos, reservation);
         } else {
             System.out.println("Aucune borne n'est disponible, essayez sur d'autres créneaux :)");
         }
         return Application.RETURN_SUCCESS;
     }
 
-    public static Date getDate() {
-        String dateString = Application.askForLine("Saisir la date (dd-mm-yyyy) : ");
-        boolean condition = true;
-        while (true) {
-            if (dateString.matches("\\d{2}-\\d{2}-\\d{4}")) {
-                try {
-                    return new Date(new SimpleDateFormat("dd-MM-yyyy").parse(dateString).getTime());
-                } catch (ParseException e) {
-                    System.out.println("La date n'est pas valide");
-                    dateString = Application.askForLine("Saisir la date (dd-mm-yyyy) : ");
-                }
-            } else {
-                System.out.println("La date saisie ne respecte pas le format dd-mm-yyyy");
-                dateString = Application.askForLine("Saisir la date (dd-mm-yyyy) : ");
-            }
-        }
-    }
-
-    public static Time getInt1(String dateString) {
-        String int1String = Application.askForLine("Saisir l'intervalle de début (hh:mm) : ");
-        while (true) {
-            if (int1String.matches("\\d{2}:\\d{2}")) {
-                try {
-                    return new Time(new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(dateString + " " + int1String).getTime());
-                } catch (ParseException e) {
-                    System.out.println("L'intervalle n'est pas valide");
-                    int1String = Application.askForLine("Saisir l'intervalle de début (hh:mm) : ");
-                }
-            } else {
-                System.out.println("L'intervalle saisi ne respecte pas le format hh:mm");
-                int1String = Application.askForLine("Saisir l'intervalle de début (hh:mm) : ");
-            }
-        }
-    }
-
-    public static Time getInt2(String dateString) {
-        String int2String = Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ");
-        boolean condition = true;
-        while (true) {
-            if (int2String.matches("\\d{2}:\\d{2}")) {
-                try {
-                    return new Time(new SimpleDateFormat("dd-MM-yyyy HH:mm").parse(dateString + " " + int2String).getTime());
-                } catch (ParseException e) {
-                    System.out.println("L'intervalle n'est pas valide");
-                    int2String = Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ");
-                }
-            } else {
-                System.out.println("L'intervalle saisi ne respecte pas le format hh:mm");
-                int2String = Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ");
-            }
-        }
+    /**
+     * Initialisation des valeurs de base d'une nouvelle réservation de l'utilisateur
+     *
+     * @return la nouvelle réservation
+     */
+    private Reservation initReservationValue() {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        Reservation reservation = new Reservation();
+        reservation.setDate_reservation(getUserDataUtils.getDate());
+        reservation.setDebut_intervalle(getUserDataUtils.getDebutIntervalle(formatter.format(reservation.getDate_reservation())));
+        reservation.setFin_intervalle(getUserDataUtils.getFinIntervalle(formatter.format(reservation.getDate_reservation())));
+        reservation.setNb_prolongement(0);
+        reservation.setSupplement(false);
+        return reservation;
     }
 
     /**
@@ -140,12 +107,41 @@ public class VerifDispoChoice extends ChoicesAbstract {
     }
 
     /**
+     * Demande à l'utilisateur s'il souhaite fusionner ses réservations
+     *
+     * @param newReservation la nouvelle réservation de l'utilisateur
+     * @return vrai si l'utilisateur souhaite fusionner 2 réservations
+     * @throws SQLException renvoie une exception
+     */
+    public static boolean doesUserWantToMergeReservation(Reservation newReservation) throws SQLException {
+        System.out.println("Il existe une réservation à votre nom une heure précédant la réservation que vous souhaitez effectuer");
+
+        //Récupération du choix de l'utilisateur
+        String doingMerge = Application.askForLine("Souhaitez vous fusionner vos réservation (oui/non) : ");
+        while (!doingMerge.matches("^(?:oui|non)$")) {
+            doingMerge = Application.askForLine("Mauvaise saisie !\nSouhaitez vous fusionner vos réservation (oui/non) : ");
+        }
+        boolean userDecision = doingMerge.equals("oui");
+
+        if (userDecision) {
+            Reservation oldReservation = ReservationDAO.getExistingReservationFromSameUser(Application.currentClient.getId_client(), newReservation);
+            if (!(ReservationDAO.hasExistingReservation(newReservation.getDate_reservation(), oldReservation.getFin_intervalle(),
+                    newReservation.getFin_intervalle(), oldReservation.getId_borne()))) {
+                ReservationDAO.updateMergeReservation(oldReservation, newReservation.getFin_intervalle());
+            } else {
+                System.out.println("La borne ou vous avez réservé est occupé pendant l'intervalle " + oldReservation.getFin_intervalle() + " - " + newReservation.getFin_intervalle());
+                userDecision = false;
+            }
+        }
+        return userDecision;
+    }
+
+    /**
      * Génération de la réservation du client
      */
-    public void generateNewReservation(Date date, Time int1, Time int2, int id_estAssocie, int borne) {
-        Reservation reserv = new Reservation(date, int1, int2, 0, false, id_estAssocie, borne);
+    public void generateNewReservation(Reservation reservation) {
         try {
-            ReservationDAO.registrerReservation(reserv);
+            ReservationDAO.registrerReservation(reservation);
             System.out.println("Ajout réussi de la réservation");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -153,7 +149,7 @@ public class VerifDispoChoice extends ChoicesAbstract {
         }
     }
 
-    public int reserver(ArrayList<Integer> bornes, Date date, Time int1, Time int2) {
+    public int reserver(ArrayList<Integer> bornes, Reservation reservation) {
         AtomicBoolean condition = new AtomicBoolean(true);
         while (condition.get()) {
             String choice = Application.askForLine("Saissisez STOP pour ne pas réserver, sinon saissisez le nom de la borne à réserver !");
@@ -165,26 +161,29 @@ public class VerifDispoChoice extends ChoicesAbstract {
                     for (Integer borne : bornes) {
                         if (borne == choix) {
                             condition.set(false);
+                            reservation.setId_borne(choix);
                             //Réservation avec une voiture empruntée ou louée
                             if (this.isVoitureEmprunteOuLoue()) {
-                                this.generateNewReservation(date, int1, int2, generateNewEstAssocieTemporaire(), choix);
+                                reservation.setId_estAssocie(generateNewEstAssocieTemporaire());
+                                this.generateNewReservation(reservation);
                             } else {
                                 ArrayList<EstAssocie> estAssocies = (ArrayList<EstAssocie>) EstAssocieDAO.getEstAssocieByClient(Application.currentClient.getId_client());
                                 if (estAssocies.size() == 0) {
                                     return Application.RETURN_SUCCESS;
                                 } else {
                                     System.out.println("Choissisez la plaque avec laquelle réserver :");
-                                    HashMap<String, EstAssocie> map = new HashMap<>();
+                                    HashMap<String, EstAssocie> mapEstAssocieFromCurrentUser = new HashMap<>();
                                     for (EstAssocie estAssocy : estAssocies) {
                                         System.out.println(estAssocy.getId_plaque());
-                                        map.put(estAssocy.getId_plaque(), estAssocy);
+                                        mapEstAssocieFromCurrentUser.put(estAssocy.getId_plaque(), estAssocy);
                                     }
                                     String plaque_choice = Application.askForLine("Saissisez le nom de la plaque");
-                                    while (map.getOrDefault(plaque_choice, null) == null) {
+                                    while (mapEstAssocieFromCurrentUser.getOrDefault(plaque_choice, null) == null) {
                                         System.out.println("Vous n'avez pas saisi une plaque valide, veuillez recommencer");
                                         plaque_choice = Application.askForLine("Saissisez le nom de la plaque");
                                     }
-                                    this.generateNewReservation(date, int1, int2, map.get(plaque_choice).getId_estAssocie(), choix);
+                                    reservation.setId_estAssocie(mapEstAssocieFromCurrentUser.get(plaque_choice).getId_estAssocie());
+                                    this.generateNewReservation(reservation);
                                     return Application.RETURN_SUCCESS;
                                 }
                             }
