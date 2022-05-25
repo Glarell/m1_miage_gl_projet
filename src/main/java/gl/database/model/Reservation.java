@@ -22,6 +22,7 @@ public class Reservation {
     private float prix;
 
     public Reservation() {
+        this.id_reservation = -1;
     }
 
     public Reservation(int id_reservation, Date date_reservation, Time debut_intervalle, Time fin_intervalle, int nb_prolongement, boolean isSupplement, int id_estAssocie, int id_borne) {

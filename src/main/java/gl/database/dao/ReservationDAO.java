@@ -223,6 +223,21 @@ public class ReservationDAO {
     }
 
     /**
+     * Mise à jour du prix de la réservation
+     *
+     * @param reservation la réservation à modifier
+     * @param newPrix     la nouveau prix de la réservation
+     * @throws SQLException renvoie une exception
+     */
+    public static void updatePriceReservation(Reservation reservation, float newPrix) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("UPDATE Reservation SET prix = ? WHERE id_reservation = ?;");
+        stmt.setFloat(1, newPrix);
+        stmt.setInt(2, reservation.getId_reservation());
+        stmt.executeUpdate();
+    }
+
+    /**
      * Mise à jour d'une réservation après l'arrivée d'un client
      *
      * @param reservation la réservation à modifier

@@ -2,6 +2,7 @@ package gl.database.dao;
 
 import gl.database.ConnectionPostgre;
 import gl.database.model.Borne;
+import gl.database.model.EtatBorne;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -56,6 +57,29 @@ public class BorneDAO {
     }
 
     /**
+     * Vérifie si une borne est à un état souhaité
+     *
+     * @param id_borne     l'identifiant de la borne actuelle
+     * @param id_etatBorne l'état de borne souhaité
+     * @return vrai si la borne est disponible
+     */
+    public static boolean isBorneWithEtatBorne(int id_borne, String id_etatBorne) {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        boolean isDisponible = false;
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT id_etatborne FROM Borne WHERE id_borne = ?");
+            stmt.setInt(1, id_borne);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                isDisponible = res.getString(1).equals(id_etatBorne);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDisponible;
+    }
+
+    /**
      * Récupération de toutes les bornes disponibles à une date et un intervalle donné
      *
      * @param date             la date de recherche
@@ -91,12 +115,12 @@ public class BorneDAO {
         return listOfBorneFromReservation;
     }
 
-    public static List<Integer> getAllBorneFromDateDispoUpdate(Date date, Time int1, Time int2,int id) {
+    public static List<Integer> getAllBorneFromDateDispoUpdate(Date date, Time int1, Time int2, int id) {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         List<Integer> listOfBorne = new ArrayList<>();
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT id_borne FROM Reservation EXCEPT SELECT id_borne FROM Reservation where id_reservation != ? and date_reservation = ? and not ((? > fin_intervalle and ? > fin_intervalle) or (? < debut_intervalle and ? < debut_intervalle));");
-            stmt.setInt(1,id);
+            stmt.setInt(1, id);
             stmt.setDate(2, date);
             stmt.setTime(3, int1);
             stmt.setTime(4, int2);
