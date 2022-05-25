@@ -58,6 +58,14 @@ public class BorneDAOTest {
     }
 
     @Test
+    public void testIsBorneWithEtatBorne() throws SQLException {
+        Borne borne = BorneDAO.getAllBorne().get(0);
+
+        assertThat(BorneDAO.isBorneWithEtatBorne(borne.getId_borne(), borne.getId_etatBorne()))
+                .isTrue();
+    }
+
+    @Test
     public void testUpdateBorneWithUnknowState() {
         assertThatThrownBy(() -> {
             Borne borne = BorneDAO.getAllBorne().get(0);

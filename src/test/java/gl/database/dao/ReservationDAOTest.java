@@ -197,6 +197,26 @@ public class ReservationDAOTest {
     }
 
     @Test
+    public void testUpdatePriceReservation() throws SQLException, ParseException {
+        EstAssocie estAssocie = EstAssocieDAO.getEstAssocieByClient(999).get(0);
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        Date date_reservation = new Date(format.parse("01-01-2022 00:00").getTime());
+
+        Reservation reservation = new Reservation(999, date_reservation,
+                new Time(format.parse("01-01-2022 10:00").getTime()),
+                new Time(format.parse("01-01-2022 10:30").getTime()),
+                0, false, estAssocie.getId_estAssocie(), 1);
+        ReservationDAO.registrerReservationWithId(reservation);
+
+        ReservationDAO.updatePriceReservation(reservation, 50);
+
+        assertThat(ReservationDAO.getReservationById(999).getPrix())
+                .isEqualTo(50);
+
+        ReservationDAO.deleteOldReservation(999);
+    }
+
+    @Test
     public void testUpdateArriveeReservation() throws SQLException, ParseException {
         EstAssocie estAssocie = EstAssocieDAO.getEstAssocieByClient(999).get(0);
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
