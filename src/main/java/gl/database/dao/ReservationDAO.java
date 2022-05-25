@@ -260,6 +260,9 @@ public class ReservationDAO {
         reservation.setSupplement(res.getBoolean(6));
         reservation.setId_estAssocie(res.getInt(7));
         reservation.setId_borne(res.getInt(8));
+        reservation.setArrivee_client(res.getTime(9));
+        reservation.setDepart_client(res.getTime(10));
+        reservation.setPrix(res.getFloat(11));
     }
 
     /**

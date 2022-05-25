@@ -96,7 +96,10 @@ CREATE TABLE Reservation
     id_estAssocie    INTEGER NOT NULL
         CONSTRAINT FK_id_estAssocie_reservation REFERENCES EstAssocie (id_estAssocie),
     id_borne         INTEGER NOT NULL
-        CONSTRAINT FK_id_borne_reservation REFERENCES Borne (id_borne)
+        CONSTRAINT FK_id_borne_reservation REFERENCES Borne (id_borne),
+    arrivee_client   TIME             DEFAULT NULL,
+    depart_client    TIME             DEFAULT NULL,
+    prix             FLOAT            DEFAULT 0 CHECK ( prix >= 0 )
 );
 
 CREATE TABLE VariableApplication
@@ -228,4 +231,4 @@ values ('délai attente', 15);
 insert into VariableApplication (nom, valeur)
 values ('frais supplémentaires réservation', 30);
 
-SET timezone=+2;
+SET timezone = +2;

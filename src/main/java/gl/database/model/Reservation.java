@@ -15,6 +15,12 @@ public class Reservation {
     private int id_estAssocie;
     private int id_borne;
 
+    private Time arrivee_client;
+
+    private Time depart_client;
+
+    private float prix;
+
     public Reservation() {
     }
 
@@ -102,6 +108,38 @@ public class Reservation {
 
     public void setId_borne(int id_borne) {
         this.id_borne = id_borne;
+    }
+
+    public boolean isTemporaire() {
+        return isTemporaire;
+    }
+
+    public void setTemporaire(boolean temporaire) {
+        isTemporaire = temporaire;
+    }
+
+    public Time getArrivee_client() {
+        return arrivee_client;
+    }
+
+    public void setArrivee_client(Time arrivee_client) {
+        this.arrivee_client = arrivee_client;
+    }
+
+    public Time getDepart_client() {
+        return depart_client;
+    }
+
+    public void setDepart_client(Time depart_client) {
+        this.depart_client = depart_client;
+    }
+
+    public float getPrix() {
+        return prix;
+    }
+
+    public void setPrix(float prix) {
+        this.prix = prix;
     }
 
     @Override
