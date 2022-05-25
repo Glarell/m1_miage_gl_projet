@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,6 +27,23 @@ public class ReservationDAOTest {
 
         PlaqueDAO.insertNewPlaque("plaque_test");
         EstAssocieDAO.insertNewEstAssocie(new EstAssocie(999, "plaque_test"));
+    }
+
+    @Test
+    public void testGetReservationFromCurrentDate() throws SQLException {
+        EstAssocie estAssocie = EstAssocieDAO.getEstAssocieByClient(999).get(0);
+        Date date_reservation = new Date(System.currentTimeMillis());
+
+        Reservation reservation = new Reservation(999, date_reservation,
+                Time.valueOf(LocalDateTime.now().minusMinutes(5).toLocalTime()),
+                Time.valueOf(LocalDateTime.now().plusMinutes(5).toLocalTime()),
+                0, false, estAssocie.getId_estAssocie(), 1);
+        ReservationDAO.registrerReservationWithId(reservation);
+
+        assertThat(ReservationDAO.getReservationFromCurrentDate(999).getId_reservation())
+                .isEqualTo(999);
+
+        ReservationDAO.deleteOldReservation(999);
     }
 
     @Test
@@ -174,6 +192,29 @@ public class ReservationDAOTest {
 
         assertThat(ReservationDAO.getReservationById(999).getFin_intervalle().toLocalTime())
                 .isEqualTo(new Time(format.parse("01-01-2022 13:30").getTime()).toLocalTime());
+
+        ReservationDAO.deleteOldReservation(999);
+    }
+
+    @Test
+    public void testUpdateArriveeReservation() throws SQLException, ParseException {
+        EstAssocie estAssocie = EstAssocieDAO.getEstAssocieByClient(999).get(0);
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        Date date_reservation = new Date(format.parse("01-01-2022 00:00").getTime());
+
+        Reservation reservation = new Reservation(999, date_reservation,
+                new Time(format.parse("01-01-2022 10:00").getTime()),
+                new Time(format.parse("01-01-2022 10:30").getTime()),
+                0, false, estAssocie.getId_estAssocie(), 1);
+        ReservationDAO.registrerReservationWithId(reservation);
+
+        assertThat(ReservationDAO.getReservationById(999).getArrivee_client())
+                .isNull();
+
+        ReservationDAO.updateArriveeReservation(reservation);
+
+        assertThat(ReservationDAO.getReservationById(999).getArrivee_client())
+                .isNotNull();
 
         ReservationDAO.deleteOldReservation(999);
     }
