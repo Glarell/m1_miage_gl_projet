@@ -39,8 +39,9 @@ public class Choices {
         choicesConnected.put(5, "5 - Recharger sans réservations");
         choicesConnected.put(6, "6 - Conclure un contrat mensuel");
         choicesConnected.put(7, "7 - Consulter mon profil");
-        choicesConnected.put(8, "8 - Me déconnecter");
-        choicesConnected.put(9, "9 - Quitter l'application");
+        choicesConnected.put(8, "8 - Se présenter à sa réservation");
+        choicesConnected.put(9, "9 - Me déconnecter");
+        choicesConnected.put(10, "10 - Quitter l'application");
         commandsConnected.put(1, new VerifDispoChoice());
         commandsConnected.put(2, new AddImmatChoice());
         commandsConnected.put(3, new ModifReservationChoice());
@@ -48,8 +49,9 @@ public class Choices {
         commandsConnected.put(5, new WithoutReservationChoice());
         commandsConnected.put(6, new CreateContractChoice());
         commandsConnected.put(7, new ConsultProfileChoice());
-        commandsConnected.put(8, new DeconnectionChoice());
-        commandsConnected.put(9, new QuitChoice());
+        commandsConnected.put(8, new ShowUpChoice());
+        commandsConnected.put(9, new DeconnectionChoice());
+        commandsConnected.put(10, new QuitChoice());
         choicesManager = new HashMap<>();
         commandsManager = new HashMap<>();
         choicesManager.put(1, "1 - Définir le délai d'attente");

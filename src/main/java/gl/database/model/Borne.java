@@ -8,6 +8,10 @@ public class Borne {
     public Borne() {
     }
 
+    public Borne(int id_borne) {
+        this.id_borne = id_borne;
+    }
+
     public int getId_borne() {
         return id_borne;
     }

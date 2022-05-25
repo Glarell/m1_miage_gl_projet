@@ -13,6 +13,7 @@ public class Abonnement {
     private int id_borne;
 
     public Abonnement() {
+        this.id_abonnement = -1;
     }
 
     public Abonnement(Date date_abonnement, Time debut_intervalle, Time fin_intervalle, int id_client, int id_borne) {

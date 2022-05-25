@@ -1,20 +1,19 @@
 package gl.database.dao;
 
-import gl.database.model.*;
+import gl.database.model.Abonnement;
+import gl.database.model.Client;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.postgresql.util.PSQLException;
 
 import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 public class AbonnementDAOTest {
 
@@ -60,6 +59,24 @@ public class AbonnementDAOTest {
                 .isNotNull()
                 .contains(date_abonnement)
                 .hasSize(1);
+
+        AbonnementDAO.deleteOldAbonnementByClient(999);
+    }
+
+    @Test
+    public void testGetAbonnementFromCurrentDate() throws SQLException, ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        Date date_abonnement = new Date(System.currentTimeMillis());
+
+        Abonnement abonnement = new Abonnement(date_abonnement,
+                Time.valueOf(LocalDateTime.now().minusMinutes(5).toLocalTime()),
+                Time.valueOf(LocalDateTime.now().plusMinutes(5).toLocalTime()),
+                999, 1);
+        AbonnementDAO.registrerAbonnement(abonnement);
+
+        assertThat(formatter.format(AbonnementDAO.getAbonnementFromCurrentDate(999).getDate_abonnement()))
+                .isNotNull()
+                .isEqualTo(formatter.format(date_abonnement));
 
         AbonnementDAO.deleteOldAbonnementByClient(999);
     }

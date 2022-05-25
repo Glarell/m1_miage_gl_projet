@@ -81,8 +81,26 @@ CREATE TABLE Abonnement
     id_client        INTEGER NOT NULL
         CONSTRAINT FK_id_client_abonnement REFERENCES Client (id_client),
     id_borne         INTEGER NOT NULL
-        CONSTRAINT FK_id_borne_abonnement REFERENCES Borne (id_borne)
+        CONSTRAINT FK_id_borne_abonnement REFERENCES Borne (id_borne),
+    prix             FLOAT CHECK ( prix >= 0 )
 );
+
+CREATE FUNCTION set_default_price_abonnement() RETURNS trigger AS
+$$
+BEGIN
+    NEW.prix = (extract(MIN from NEW.fin_intervalle - NEW.debut_intervalle) +
+                extract(HOUR from NEW.fin_intervalle - NEW.debut_intervalle) *
+                60) *
+               extract(DAYS from date_trunc('month', NEW.date_abonnement) + interval '1 month' - interval '1 day');
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_insert_abonnement
+    BEFORE INSERT
+    ON Abonnement
+    FOR EACH ROW
+EXECUTE PROCEDURE set_default_price_abonnement();
 
 CREATE TABLE Reservation
 (
@@ -99,8 +117,24 @@ CREATE TABLE Reservation
         CONSTRAINT FK_id_borne_reservation REFERENCES Borne (id_borne),
     arrivee_client   TIME             DEFAULT NULL,
     depart_client    TIME             DEFAULT NULL,
-    prix             FLOAT            DEFAULT 0 CHECK ( prix >= 0 )
+    prix             FLOAT CHECK ( prix >= 0 )
 );
+
+CREATE FUNCTION set_default_price() RETURNS trigger AS
+$$
+BEGIN
+    NEW.prix = extract(MIN from NEW.fin_intervalle - NEW.debut_intervalle) +
+               extract(HOUR from NEW.fin_intervalle - NEW.debut_intervalle) *
+               60;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tr_insert_reservation
+    BEFORE INSERT
+    ON Reservation
+    FOR EACH ROW
+EXECUTE PROCEDURE set_default_price();
 
 CREATE TABLE VariableApplication
 (

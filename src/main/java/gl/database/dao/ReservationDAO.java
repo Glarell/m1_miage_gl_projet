@@ -130,6 +130,30 @@ public class ReservationDAO {
     }
 
     /**
+     * Récupération de la réservation à la date courante
+     *
+     * @param id_client l'id du client qui a fait la réservation
+     * @return la réservation correspondant
+     */
+    public static Reservation getReservationFromCurrentDate(int id_client) {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        Reservation reservation = new Reservation();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT Reservation.* FROM Reservation" +
+                    " INNER JOIN estassocie e ON Reservation.id_estAssocie = e.id_estassocie" +
+                    " WHERE id_client = ? AND date_reservation = current_date AND debut_intervalle <= current_time AND current_time <= fin_intervalle");
+            stmt.setInt(1, id_client);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                setReservationAttributes(res, reservation);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reservation;
+    }
+
+    /**
      * Recherche de la réservation du même client une heure précédant le début de la réservation
      *
      * @param id_client   l'identifiant du client
@@ -200,6 +224,33 @@ public class ReservationDAO {
         stmt.executeUpdate();
     }
 
+    /**
+     * Mise à jour du prix de la réservation
+     *
+     * @param reservation la réservation à modifier
+     * @param newPrix     la nouveau prix de la réservation
+     * @throws SQLException renvoie une exception
+     */
+    public static void updatePriceReservation(Reservation reservation, float newPrix) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("UPDATE Reservation SET prix = ? WHERE id_reservation = ?;");
+        stmt.setFloat(1, newPrix);
+        stmt.setInt(2, reservation.getId_reservation());
+        stmt.executeUpdate();
+    }
+
+    /**
+     * Mise à jour d'une réservation après l'arrivée d'un client
+     *
+     * @param reservation la réservation à modifier
+     * @throws SQLException renvoie une exception
+     */
+    public static void updateArriveeReservation(Reservation reservation) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("UPDATE Reservation SET arrivee_client = current_time WHERE id_reservation = ?;");
+        stmt.setInt(1, reservation.getId_reservation());
+        stmt.executeUpdate();
+    }
 
     /**
      * Suppression d'une réservation dans la BDD
