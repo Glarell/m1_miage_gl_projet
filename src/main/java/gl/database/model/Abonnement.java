@@ -12,6 +12,8 @@ public class Abonnement {
     private int id_client;
     private int id_borne;
 
+    private float prix;
+
     public Abonnement() {
         this.id_abonnement = -1;
     }
@@ -79,6 +81,14 @@ public class Abonnement {
 
     public void setId_borne(int id_borne) {
         this.id_borne = id_borne;
+    }
+
+    public float getPrix() {
+        return prix;
+    }
+
+    public void setPrix(float prix) {
+        this.prix = prix;
     }
 
     @Override

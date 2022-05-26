@@ -115,6 +115,19 @@ public class NotificationDAO {
     }
 
     /**
+     * Suppression de toutes les notifications liées à un client dans la BDD
+     *
+     * @param id_client l'id du client
+     * @throws SQLException renvoie une exception
+     */
+    public static void deleteOldNotificationByClient(int id_client) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM Notification WHERE id_client = ?");
+        stmt.setInt(1, id_client);
+        stmt.executeUpdate();
+    }
+
+    /**
      * Association des résultats d'une requête à une notification
      *
      * @param res          la requête contenant les données

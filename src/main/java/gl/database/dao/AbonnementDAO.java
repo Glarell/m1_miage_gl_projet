@@ -27,6 +27,34 @@ public class AbonnementDAO {
     }
 
     /**
+     * Récupération de tous les abonnements susceptibles d'être utilisés par l'utilisateur actuellement
+     *
+     * @param id_client l'id du client
+     * @return la liste des abonnements
+     */
+    public static List<Abonnement> getAbonnementInProgressByClient(int id_client) {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        List<Abonnement> listOfAbonnement = new ArrayList<>();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT Abonnement.* FROM Abonnement" +
+                    " INNER JOIN borne b ON Abonnement.id_borne = b.id_borne" +
+                    " WHERE id_client = ? AND date_abonnement <= current_date" +
+                    " AND current_date <= (date_trunc('month', date_abonnement) + interval '1 month' - interval '1 day')::date" +
+                    " AND debut_intervalle <= current_time AND b.id_etatBorne = 'occupée'");
+            stmt.setInt(1, id_client);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                Abonnement abonnement = new Abonnement();
+                setAbonnementAttributes(res, abonnement);
+                listOfAbonnement.add(abonnement);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return listOfAbonnement;
+    }
+
+    /**
      * Récupération des abonnements liés à un client
      *
      * @param id_client l'id du client
@@ -185,6 +213,21 @@ public class AbonnementDAO {
     }
 
     /**
+     * Mise à jour du prix de l'abonnement
+     *
+     * @param abonnement l'abonnement à modifier
+     * @param newPrix    la nouveau prix de l'abonnement
+     * @throws SQLException renvoie une exception
+     */
+    public static void updatePriceAbonnement(Abonnement abonnement, float newPrix) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("UPDATE Abonnement SET prix = ? WHERE id_abonnement = ?");
+        stmt.setFloat(1, newPrix);
+        stmt.setInt(2, abonnement.getId_abonnement());
+        stmt.executeUpdate();
+    }
+
+    /**
      * Suppression d'un abonnement dans la BDD
      *
      * @param id_client l'id du client
@@ -204,5 +247,6 @@ public class AbonnementDAO {
         abonnement.setFin_intervalle(res.getTime(4));
         abonnement.setId_client(res.getInt(5));
         abonnement.setId_borne(res.getInt(6));
+        abonnement.setPrix(res.getFloat(7));
     }
 }
