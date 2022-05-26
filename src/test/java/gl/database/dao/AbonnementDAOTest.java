@@ -1,7 +1,6 @@
 package gl.database.dao;
 
-import gl.database.model.Abonnement;
-import gl.database.model.Client;
+import gl.database.model.*;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -77,6 +76,35 @@ public class AbonnementDAOTest {
         assertThat(formatter.format(AbonnementDAO.getAbonnementFromCurrentDate(999).getDate_abonnement()))
                 .isNotNull()
                 .isEqualTo(formatter.format(date_abonnement));
+
+        AbonnementDAO.deleteOldAbonnementByClient(999);
+    }
+
+    @Test
+    public void testGetAbonnementInProgressByClient() throws SQLException {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        Date date_abonnement = new Date(System.currentTimeMillis());
+        Borne borne = BorneDAO.getAllBorne().get(0);
+        String id_etatBorneSave = borne.getId_etatBorne();
+
+        Abonnement abonnement = new Abonnement(date_abonnement,
+                Time.valueOf(LocalDateTime.now().minusMinutes(5).toLocalTime()),
+                Time.valueOf(LocalDateTime.now().plusMinutes(5).toLocalTime()),
+                999, 1);
+        AbonnementDAO.registrerAbonnement(abonnement);
+
+        //Test sur le changement du status
+        BorneDAO.updateStateOfBorne(borne, EtatBorne.STATE_BUSY);
+        assertThat(BorneDAO.getAllBorne().get(0).toString())
+                .isEqualTo(borne.toString());
+
+        assertThat(AbonnementDAO.getAbonnementInProgressByClient(999))
+                .hasSize(1);
+
+        //Restoration du status de base
+        BorneDAO.updateStateOfBorne(borne, id_etatBorneSave);
+        assertThat(BorneDAO.getAllBorne().get(0).toString())
+                .isEqualTo(borne.toString());
 
         AbonnementDAO.deleteOldAbonnementByClient(999);
     }
@@ -183,6 +211,24 @@ public class AbonnementDAOTest {
 
         assertThat(AbonnementDAO.getAbonnementByClient(999).get(0).getFin_intervalle().toLocalTime())
                 .isEqualTo(new Time(format.parse("01-01-1999 13:30").getTime()).toLocalTime());
+
+        AbonnementDAO.deleteOldAbonnementByClient(999);
+    }
+
+    @Test
+    public void testUpdatePriceReservation() throws SQLException, ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        Date date_abonnement = new Date(format.parse("01-01-1999 00:00").getTime());
+
+        Abonnement abonnement = new Abonnement(date_abonnement,
+                new Time(format.parse("01-01-1999 10:00").getTime()),
+                new Time(format.parse("01-01-1999 10:30").getTime()),
+                999, 1);
+        AbonnementDAO.registrerAbonnement(abonnement);
+        AbonnementDAO.updatePriceAbonnement(AbonnementDAO.getAbonnementByClient(999).get(0), 50);
+
+        assertThat(AbonnementDAO.getAbonnementByClient(999).get(0).getPrix())
+                .isEqualTo(50);
 
         AbonnementDAO.deleteOldAbonnementByClient(999);
     }
