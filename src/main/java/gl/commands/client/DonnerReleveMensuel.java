@@ -17,6 +17,9 @@ public class DonnerReleveMensuel extends ChoicesAbstract {
         System.out.println("[------Affichage du relevé mensuel------]");
         try {
             double[] releve = ReservationDAO.getReleveMensuel();
+            if (releve[1] < 0 || releve[0] < 0) {
+                return Application.RETURN_FAILED;
+            }
             LocalDate date = LocalDate.now();
             String content = String.format("\t[Relevé du mois : %s]\n" +
                     "\tLe nombre de réservations au cours de ce mois est de : %s\n" +
