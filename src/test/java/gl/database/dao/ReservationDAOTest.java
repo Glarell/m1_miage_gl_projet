@@ -65,6 +65,30 @@ public class ReservationDAOTest {
     }
 
     @Test
+    public void testGetAllReservationInProgressByIdClient() throws SQLException, ParseException {
+        EstAssocie estAssocie = EstAssocieDAO.getEstAssocieByClient(999).get(0);
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        Date date_reservation = new Date(format.parse("01-01-2022 00:00").getTime());
+
+        Reservation reservation = new Reservation(999, date_reservation,
+                new Time(format.parse("01-01-2022 10:00").getTime()),
+                new Time(format.parse("01-01-2022 10:30").getTime()),
+                0, false, estAssocie.getId_estAssocie(), 1);
+        ReservationDAO.registrerReservationWithId(reservation);
+
+        assertThat(ReservationDAO.getAllReservationInProgressByIdClient(999))
+                .hasSize(0);
+
+        ReservationDAO.updateArriveeReservation(reservation);
+
+        assertThat(ReservationDAO.getAllReservationInProgressByIdClient(999))
+                .filteredOn(Reservation::getId_reservation, 999)
+                .hasSize(1);
+
+        ReservationDAO.deleteOldReservation(999);
+    }
+
+    @Test
     public void testDeleteOldReservation() throws SQLException, ParseException {
         EstAssocie estAssocie = EstAssocieDAO.getEstAssocieByClient(999).get(0);
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
@@ -239,8 +263,32 @@ public class ReservationDAOTest {
         ReservationDAO.deleteOldReservation(999);
     }
 
+    @Test
+    public void testUpdateDepartReservation() throws SQLException, ParseException {
+        EstAssocie estAssocie = EstAssocieDAO.getEstAssocieByClient(999).get(0);
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        Date date_reservation = new Date(format.parse("01-01-2022 00:00").getTime());
+
+        Reservation reservation = new Reservation(999, date_reservation,
+                new Time(format.parse("01-01-2022 10:00").getTime()),
+                new Time(format.parse("01-01-2022 10:30").getTime()),
+                0, false, estAssocie.getId_estAssocie(), 1);
+        ReservationDAO.registrerReservationWithId(reservation);
+
+        assertThat(ReservationDAO.getReservationById(999).getArrivee_client())
+                .isNull();
+
+        ReservationDAO.updateDepartReservation(reservation);
+
+        assertThat(ReservationDAO.getReservationById(999).getDepart_client())
+                .isNotNull();
+
+        ReservationDAO.deleteOldReservation(999);
+    }
+
     @AfterAll
     static void end() throws SQLException {
+        NotificationDAO.deleteOldNotificationByClient(999);
         EstAssocieDAO.deleteOldEstAssocie(999, "plaque_test");
         ClientDAO.deleteClient(999);
         PlaqueDAO.deleteOldPlaque("plaque_test");

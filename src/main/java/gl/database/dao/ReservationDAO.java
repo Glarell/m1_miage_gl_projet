@@ -32,6 +32,33 @@ public class ReservationDAO {
         return list;
     }
 
+    /**
+     * Récupération de toutes les réservations associées à un client qui sont actuellement en cours
+     *
+     * @param id_client l'identifiant de client
+     * @return la liste des réservations
+     */
+    public static ArrayList<Reservation> getAllReservationInProgressByIdClient(int id_client) {
+        ArrayList<Reservation> list = new ArrayList<>();
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        Reservation reservation = new Reservation();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT Reservation.* FROM Reservation" +
+                    " INNER JOIN estassocie e ON e.id_estassocie = reservation.id_estassocie" +
+                    " WHERE e.id_client = ?" +
+                    " AND arrivee_client IS NOT NULL AND depart_client IS NULL");
+            stmt.setInt(1, id_client);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                setReservationAttributes(res, reservation);
+                list.add(reservation);
+            }
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return list;
+    }
+
     public static void deleteReservationById(int id) {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         try {
@@ -249,6 +276,19 @@ public class ReservationDAO {
     public static void updateArriveeReservation(Reservation reservation) throws SQLException {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         PreparedStatement stmt = conn.prepareStatement("UPDATE Reservation SET arrivee_client = current_time WHERE id_reservation = ?;");
+        stmt.setInt(1, reservation.getId_reservation());
+        stmt.executeUpdate();
+    }
+
+    /**
+     * Mise à jour d'une réservation après le départ d'un client
+     *
+     * @param reservation la réservation à modifier
+     * @throws SQLException renvoie une exception
+     */
+    public static void updateDepartReservation(Reservation reservation) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("UPDATE Reservation SET depart_client = current_time WHERE id_reservation = ?;");
         stmt.setInt(1, reservation.getId_reservation());
         stmt.executeUpdate();
     }

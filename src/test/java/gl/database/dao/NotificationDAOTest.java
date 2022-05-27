@@ -61,6 +61,23 @@ public class NotificationDAOTest {
     }
 
     @Test
+    public void testDeleteNotificationByClient() throws SQLException {
+        Notification notification = new Notification(999, "contenu_test", 999, TypeNotification.TYPE_MAIL);
+        NotificationDAO.insertNewNotificationWithId(notification);
+
+        assertThat(NotificationDAO.getNotificationByClient(999))
+                .filteredOn(Notification::getId_notification, 999)
+                .filteredOn(Notification::getContenu, "contenu_test")
+                .filteredOn(Notification::getId_client, 999)
+                .hasSize(1);
+
+        NotificationDAO.deleteOldNotificationByClient(999);
+
+        assertThat(NotificationDAO.getNotificationByClient(999))
+                .hasSize(0);
+    }
+
+    @Test
     public void testGetAllEstAssocie() throws SQLException {
         Notification notification = new Notification(999, "contenu_test", 999, TypeNotification.TYPE_MAIL);
         Notification notification2 = new Notification(998, "contenu_test2", 999, TypeNotification.TYPE_MAIL);
