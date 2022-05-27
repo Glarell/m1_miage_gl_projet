@@ -139,7 +139,7 @@ public class CreateContractChoice extends ChoicesAbstract {
      *
      * @return le nouvel abonnement
      */
-    public static Abonnement initAbonnementValue() {
+    private static Abonnement initAbonnementValue() {
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         Abonnement abonnement = new Abonnement();
 

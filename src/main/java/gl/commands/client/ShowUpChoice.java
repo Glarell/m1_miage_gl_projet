@@ -37,7 +37,7 @@ public class ShowUpChoice extends ChoicesAbstract {
      * @param res le retour de l'application
      * @return le retour de l'application
      */
-    public static int manageExistingReservation(int res) {
+    private static int manageExistingReservation(int res) {
         Reservation reservation = ReservationDAO.getReservationFromCurrentDate(Application.getCurrentClientId());
         if (isBorneDisponible(reservation.getId_borne())) {
             try {
@@ -61,7 +61,7 @@ public class ShowUpChoice extends ChoicesAbstract {
      * @param res le retour de l'application
      * @return le retour de l'application
      */
-    public static int manageExistingAbonnement(int res) {
+    private static int manageExistingAbonnement(int res) {
         Abonnement abonnement = AbonnementDAO.getAbonnementFromCurrentDate(Application.getCurrentClientId());
         if (isBorneDisponible(abonnement.getId_borne())) {
             try {
