@@ -129,7 +129,6 @@ public class BorneDAO {
         Calendar cal = Calendar.getInstance();
         cal.setTime(debut_intervalle);
         cal.add(Calendar.MINUTE, delay.getValeur());
-        System.out.println(cal.getTime());
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         List<Borne> listOfBorneFromReservation = new ArrayList<>();
         List<Borne> listOfBorneFromAbonnement = new ArrayList<>();
@@ -138,7 +137,6 @@ public class BorneDAO {
                     "EXCEPT SELECT borne.id_borne, borne.id_etatborne FROM Borne inner join reservation r on borne.id_borne = r.id_borne where date_reservation = ? and not ((? > debut_intervalle and ? > debut_intervalle ) " +
                     "or (? < debut_intervalle and ? < debut_intervalle))");
             BorneDAO.getAttributesForDateDispo(stmtReservation, date, debut_intervalle, new Time(cal.getTimeInMillis()));
-            System.out.println(stmtReservation.toString());
             ResultSet resReservation = stmtReservation.executeQuery();
             while (resReservation.next()) {
                 listOfBorneFromReservation.add(new Borne(resReservation.getInt(1), resReservation.getString(2)));
@@ -152,8 +150,6 @@ public class BorneDAO {
             while (resAbonnement.next()) {
                 listOfBorneFromAbonnement.add(new Borne(resAbonnement.getInt(1), resAbonnement.getString(2)));
             }
-            System.out.println(listOfBorneFromReservation.size());
-            System.out.println(listOfBorneFromAbonnement.size());
             boolean condition = false;
             List<Borne> final_bornes = new ArrayList<>();
             for (Borne borne : listOfBorneFromAbonnement){

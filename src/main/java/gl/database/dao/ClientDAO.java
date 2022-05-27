@@ -60,7 +60,7 @@ public class ClientDAO {
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO Client (nom,prenom,adresse,telephone,email,mdp,carte) VALUES (?,?,?,?,?,?,?)");
         getClientAttributes(stmt, client);
         stmt.executeUpdate();
-        return client;
+        return getClientByEmailPwd(client.getEmail(), client.getMdp());
     }
 
     /**

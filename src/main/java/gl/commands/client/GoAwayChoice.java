@@ -6,12 +6,14 @@ import gl.commands.ChoicesAbstract;
 import gl.database.dao.AbonnementDAO;
 import gl.database.dao.BorneDAO;
 import gl.database.dao.ReservationDAO;
-import gl.database.model.Abonnement;
-import gl.database.model.Borne;
-import gl.database.model.EtatBorne;
-import gl.database.model.Reservation;
+import gl.database.dao.VariableApplicationDAO;
+import gl.database.model.*;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
 
@@ -168,10 +170,46 @@ public class GoAwayChoice extends ChoicesAbstract {
     }
 
     public static void generateReservationCost(Reservation reservation) {
-
+        Time date_arrivee = reservation.getArrivee_client();
+        Time date_depart = reservation.getDepart_client();
+        Time intervalle_debut = reservation.getDebut_intervalle();
+        Time intervalle_fin = reservation.getFin_intervalle();
+        long origin_duration = ((intervalle_fin.getTime() - intervalle_debut.getTime())/1000)/60;
+        long real_duration = ((date_depart.getTime() - date_arrivee.getTime())/1000)/60;
+        long price;
+        VariableApplication delay = VariableApplicationDAO.getVariableApplicationByName("délai attente");
+        VariableApplication surplus = VariableApplicationDAO.getVariableApplicationByName("frais supplémentaires réservation");
+        long surplus_consumed = 0;
+        if (real_duration - origin_duration > 0){
+            surplus_consumed = real_duration - origin_duration;
+        }
+        long rest = real_duration - surplus_consumed;
+        price = rest + (surplus_consumed * surplus.getValeur());
+        try{
+            ReservationDAO.updatePriceReservation(reservation, price);
+        }catch (SQLException e){
+            System.out.println("Cela n'as pas pu aboutir");
+        }
     }
 
     public static void generateAbonnementCost(Abonnement abonnement) {
-
+        LocalTime date_depart = abonnement.getFin_intervalle().toLocalTime();
+        Time intervalle_debut = abonnement.getDebut_intervalle();
+        Time intervalle_fin = abonnement.getFin_intervalle();
+        long origin_duration = ((intervalle_fin.getTime() - intervalle_debut.getTime())/1000)/60;
+        long real_duration = ((date_depart.getSecond() - (intervalle_debut.getTime())/1000))/60;
+        long price;
+        VariableApplication surplus = VariableApplicationDAO.getVariableApplicationByName("frais supplémentaires réservation");
+        long surplus_consumed = 0;
+        if (real_duration - origin_duration > 0){
+            surplus_consumed = real_duration - origin_duration;
+        }
+        price = (long) abonnement.getPrix() + (surplus_consumed * surplus.getValeur());
+        abonnement.setPrix(price);
+        try{
+            AbonnementDAO.updatePriceAbonnement(abonnement, price);
+        } catch(SQLException e){
+            System.out.println("Modification du prix non prise en compte");
+        }
     }
 }

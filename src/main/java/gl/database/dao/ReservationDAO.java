@@ -337,13 +337,18 @@ public class ReservationDAO {
         return reservations;
     }
 
-    public static void registrerReservation(Reservation reservation) throws SQLException {
+    public static int registrerReservation(Reservation reservation) throws SQLException {
         Connection conn = ConnectionPostgre.getInstance().getConnection();
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO Reservation (date_reservation, debut_intervalle," +
                 " fin_intervalle, nb_prolongement, isSupplement, id_estAssocie, id_borne) VALUES (?,?,?,?,?,?,?)");
         ReservationDAO.getReservationAttributes(stmt, reservation);
         NotificationDAO.createNotificationReservation(reservation);
         stmt.executeUpdate();
+        PreparedStatement stmt2= conn.prepareStatement("SELECT * FROM Reservation where id_reservation = (SELECT Max(id_reservation) FROM Reservation);");
+        ResultSet res = stmt2.executeQuery();
+        res.next();
+        return res.getInt(1);
+
     }
 
 
