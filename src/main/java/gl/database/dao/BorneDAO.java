@@ -3,6 +3,7 @@ package gl.database.dao;
 import gl.database.ConnectionPostgre;
 import gl.database.model.Borne;
 import gl.database.model.EtatBorne;
+import gl.database.model.Notification;
 import gl.database.model.VariableApplication;
 
 import java.sql.*;
@@ -244,4 +245,29 @@ public class BorneDAO {
         stmt.setTime(5, fin_intervalle);
     }
 
+    public static void deleteAllReservationsToABorne(int id_borne) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("select id_client,id_reservation from reservation inner join EstAssocie EA on EA.id_estAssocie = Reservation.id_estAssocie where id_borne=?");
+        stmt.setInt(1,id_borne);
+        ResultSet res = stmt.executeQuery();
+        while (res.next()) {
+            int id_client = res.getInt(1);
+            int id_reservation = res.getInt(2);
+            Notification notification = new Notification(String.format("Votre reservation [%s] sur la borne [%s], a été annulée suite à des problèmes techniques...\nVeuillez nous excuser pour le désagrément :)",id_reservation, id_borne), id_client, "Mail");
+            NotificationDAO.insertNewNotification(notification);
+            notification = new Notification(String.format("Votre reservation [%s] sur la borne [%s], a été annulée suite à des problèmes techniques...\nVeuillez nous excuser pour le désagrément :)",id_reservation, id_borne), id_client, "SMS");
+            NotificationDAO.insertNewNotification(notification);
+        }
+        stmt = conn.prepareStatement("delete from reservation where id_borne=?");
+        stmt.setInt(1,id_borne);
+        stmt.executeUpdate();
+
+        stmt = conn.prepareStatement("delete from reservation where id_borne=?");
+        stmt.setInt(1,id_borne);
+        stmt.executeUpdate();
+
+        stmt = conn.prepareStatement("update borne set id_etatBorne='disponible' where id_borne=?");
+        stmt.setInt(1,id_borne);
+        stmt.executeUpdate();
+    }
 }
