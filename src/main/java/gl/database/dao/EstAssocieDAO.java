@@ -97,6 +97,31 @@ public class EstAssocieDAO {
     }
 
     /**
+     * Récupération de toutes les associations client - plaque pour un client donné et une plaque dans la BDD
+     *
+     * @param id_client l'id du client recherché
+     * @return la liste des associations client - plaque
+     */
+    public static List<EstAssocie> getEstAssocieByClientAndPlaque(int id_client, String plaque_client) {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        List<EstAssocie> listOfEstAssocie = new ArrayList<>();
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM EstAssocie WHERE id_client = ? and id_plaque= ?");
+            stmt.setInt(1, id_client);
+            stmt.setString(2, plaque_client);
+            ResultSet res = stmt.executeQuery();
+            while (res.next()) {
+                EstAssocie estAssocie = new EstAssocie();
+                setEstAssocieAttributes(res, estAssocie);
+                listOfEstAssocie.add(estAssocie);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return listOfEstAssocie;
+    }
+
+    /**
      * Récupération de l'association client - plaque temporaire dans la BDD
      *
      * @param id_client l'id du client recherché
