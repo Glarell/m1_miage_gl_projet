@@ -6,12 +6,12 @@ import gl.commands.ChoicesAbstract;
 import gl.database.dao.AbonnementDAO;
 import gl.database.dao.BorneDAO;
 import gl.database.dao.ReservationDAO;
-import gl.database.model.Abonnement;
-import gl.database.model.Borne;
-import gl.database.model.EtatBorne;
-import gl.database.model.Reservation;
+import gl.database.dao.VariableApplicationDAO;
+import gl.database.model.*;
 
 import java.sql.SQLException;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.Scanner;
 
 public class ShowUpChoice extends ChoicesAbstract {
@@ -41,15 +41,25 @@ public class ShowUpChoice extends ChoicesAbstract {
         Reservation reservation = ReservationDAO.getReservationFromCurrentDate(Application.getCurrentClientId());
         if (isBorneDisponible(reservation.getId_borne())) {
             try {
-                ReservationDAO.updateArriveeReservation(reservation);
-                BorneDAO.updateStateOfBorne(new Borne(reservation.getId_borne()), EtatBorne.STATE_BUSY);
+                if (isDuringWaitingTime(reservation)) {
+                    ReservationDAO.updateArriveeReservation(reservation);
+                    BorneDAO.updateStateOfBorne(new Borne(reservation.getId_borne()), EtatBorne.STATE_BUSY);
+                    System.out.println("Vous êtes en train de recharger votre véhicule");
+                } else {
+
+                    int waiting_time = VariableApplicationDAO.getVariableApplicationByName(VariableApplication.WAITING_TIME).getValeur();
+                    ReservationDAO.updatePriceReservation(reservation, waiting_time);
+                    ReservationDAO.updateArriveeReservation(reservation);
+                    ReservationDAO.updateDepartReservation(reservation);
+                    System.out.println("Vous avez dépassé le délai d'attente !");
+                    System.out.println("Veuillez utiliser la fonctionnalité 'Se présenter sans réservation");
+                }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("Vous êtes en train de recharger votre véhicule");
         } else {
             System.out.println("La borne " + reservation.getId_borne() + " est actuellement occupé");
-            System.out.println("Veuillez utiliser la fonctionnalité 'Se présenter sans réservation'");
+            System.out.println("Veuillez utiliser la fonctionnalité 'Se présenter sans réservation");
             res = Application.RETURN_FAILED;
         }
         return res;
@@ -77,6 +87,19 @@ public class ShowUpChoice extends ChoicesAbstract {
             res = Application.RETURN_FAILED;
         }
         return res;
+    }
+
+    /**
+     * Returne un vrai ou faux en fonction de si l'utilisateur arrive après la période d'attente
+     *
+     * @param reservation la réservation
+     * @return vrai s'il arrive avant la fin de la période d'attente
+     */
+    public static boolean isDuringWaitingTime(Reservation reservation) {
+        int waiting_time = VariableApplicationDAO.getVariableApplicationByName(VariableApplication.WAITING_TIME).getValeur();
+        Time endWaitingTime = Time.valueOf(reservation.getDebut_intervalle().toLocalTime().plusMinutes(waiting_time));
+        Time currentTime = Time.valueOf(LocalTime.now());
+        return endWaitingTime.compareTo(currentTime) >= 0;
     }
 
     /**
