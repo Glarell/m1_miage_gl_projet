@@ -168,7 +168,7 @@ public class ReservationDAO {
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT Reservation.* FROM Reservation" +
                     " INNER JOIN estassocie e ON Reservation.id_estAssocie = e.id_estassocie" +
-                    " WHERE id_client = ? AND date_reservation = current_date AND debut_intervalle <= current_time AND current_time <= fin_intervalle");
+                    " WHERE id_client = ? AND date_reservation = current_date AND debut_intervalle <= current_time AND current_time <= fin_intervalle AND arrivee_client IS NULL");
             stmt.setInt(1, id_client);
             ResultSet res = stmt.executeQuery();
             while (res.next()) {

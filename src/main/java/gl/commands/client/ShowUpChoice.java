@@ -65,6 +65,7 @@ public class ShowUpChoice extends ChoicesAbstract {
         Abonnement abonnement = AbonnementDAO.getAbonnementFromCurrentDate(Application.getCurrentClientId());
         if (isBorneDisponible(abonnement.getId_borne())) {
             try {
+                AbonnementDAO.updateInProgressAbonnement(abonnement);
                 BorneDAO.updateStateOfBorne(new Borne(abonnement.getId_borne()), EtatBorne.STATE_BUSY);
             } catch (SQLException e) {
                 throw new RuntimeException(e);

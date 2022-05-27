@@ -2,7 +2,6 @@ package gl.database.dao;
 
 import gl.database.ConnectionPostgre;
 import gl.database.model.Abonnement;
-import gl.database.model.Reservation;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class AbonnementDAO {
                     " INNER JOIN borne b ON Abonnement.id_borne = b.id_borne" +
                     " WHERE id_client = ? AND date_abonnement <= current_date" +
                     " AND current_date <= (date_trunc('month', date_abonnement) + interval '1 month' - interval '1 day')::date" +
-                    " AND debut_intervalle <= current_time AND b.id_etatBorne = 'occupée'");
+                    " AND inprogress = true AND b.id_etatBorne = 'occupée'");
             stmt.setInt(1, id_client);
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
@@ -130,7 +129,7 @@ public class AbonnementDAO {
             PreparedStatement stmt = conn.prepareStatement("SELECT Abonnement.* FROM Abonnement" +
                     " WHERE id_client = ? AND date_abonnement <= current_date" +
                     " AND current_date <= (date_trunc('month', date_abonnement) + interval '1 month' - interval '1 day')::date" +
-                    " AND debut_intervalle <= current_time AND current_time <= fin_intervalle");
+                    " AND debut_intervalle <= current_time AND current_time <= fin_intervalle AND inprogress = false");
             stmt.setInt(1, id_client);
             ResultSet res = stmt.executeQuery();
             while (res.next()) {
@@ -228,6 +227,20 @@ public class AbonnementDAO {
     }
 
     /**
+     * Mise à jour du champ inProgress de l'abonnement
+     *
+     * @param abonnement l'abonnement à modifier
+     * @throws SQLException renvoie une exception
+     */
+    public static void updateInProgressAbonnement(Abonnement abonnement) throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        PreparedStatement stmt = conn.prepareStatement("UPDATE Abonnement SET inprogress = ? WHERE id_abonnement = ?");
+        stmt.setBoolean(1, !abonnement.isInProgress());
+        stmt.setInt(2, abonnement.getId_abonnement());
+        stmt.executeUpdate();
+    }
+
+    /**
      * Suppression d'un abonnement dans la BDD
      *
      * @param id_client l'id du client
@@ -248,5 +261,6 @@ public class AbonnementDAO {
         abonnement.setId_client(res.getInt(5));
         abonnement.setId_borne(res.getInt(6));
         abonnement.setPrix(res.getFloat(7));
+        abonnement.setInProgress(res.getBoolean(8));
     }
 }

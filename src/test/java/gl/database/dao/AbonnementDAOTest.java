@@ -99,6 +99,11 @@ public class AbonnementDAOTest {
                 .isEqualTo(borne.toString());
 
         assertThat(AbonnementDAO.getAbonnementInProgressByClient(999))
+                .hasSize(0);
+
+        AbonnementDAO.updateInProgressAbonnement(AbonnementDAO.getAbonnementByClient(999).get(0));
+
+        assertThat(AbonnementDAO.getAbonnementInProgressByClient(999))
                 .hasSize(1);
 
         //Restoration du status de base
@@ -211,6 +216,28 @@ public class AbonnementDAOTest {
 
         assertThat(AbonnementDAO.getAbonnementByClient(999).get(0).getFin_intervalle().toLocalTime())
                 .isEqualTo(new Time(format.parse("01-01-1999 13:30").getTime()).toLocalTime());
+
+        AbonnementDAO.deleteOldAbonnementByClient(999);
+    }
+
+    @Test
+    public void testUpdateInProgressAbonnement() throws SQLException, ParseException {
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        Date date_abonnement = new Date(format.parse("01-01-1999 00:00").getTime());
+
+        Abonnement abonnement = new Abonnement(date_abonnement,
+                new Time(format.parse("01-01-1999 10:00").getTime()),
+                new Time(format.parse("01-01-1999 10:30").getTime()),
+                999, 1);
+        AbonnementDAO.registrerAbonnement(abonnement);
+
+        AbonnementDAO.updateInProgressAbonnement(AbonnementDAO.getAbonnementByClient(999).get(0));
+        assertThat(AbonnementDAO.getAbonnementByClient(999).get(0).isInProgress())
+                .isTrue();
+
+        AbonnementDAO.updateInProgressAbonnement(AbonnementDAO.getAbonnementByClient(999).get(0));
+        assertThat(AbonnementDAO.getAbonnementByClient(999).get(0).isInProgress())
+                .isFalse();
 
         AbonnementDAO.deleteOldAbonnementByClient(999);
     }

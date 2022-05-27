@@ -11,6 +11,7 @@ public class Abonnement {
     private Time fin_intervalle;
     private int id_client;
     private int id_borne;
+    private boolean inProgress;
 
     private float prix;
 
@@ -89,6 +90,14 @@ public class Abonnement {
 
     public void setPrix(float prix) {
         this.prix = prix;
+    }
+
+    public boolean isInProgress() {
+        return inProgress;
+    }
+
+    public void setInProgress(boolean inProgress) {
+        this.inProgress = inProgress;
     }
 
     @Override
