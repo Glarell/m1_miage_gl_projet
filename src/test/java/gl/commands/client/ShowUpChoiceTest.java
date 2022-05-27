@@ -3,7 +3,6 @@ package gl.commands.client;
 import gl.application.Application;
 import gl.application.User;
 import gl.database.dao.AbonnementDAO;
-import gl.database.dao.ClientDAO;
 import gl.database.dao.ReservationDAO;
 import gl.database.model.Abonnement;
 import gl.database.model.Reservation;
@@ -36,7 +35,6 @@ public class ShowUpChoiceTest {
     @Test
     public void testShowUpChoiceWithExistingReservation() {
         reservationDAOMock.when(() -> ReservationDAO.getReservationFromCurrentDate(anyInt())).thenReturn(new Reservation(10, null, null, null, 0, false, -1, -1));
-        showUpChoiceMock.when(() -> ShowUpChoice.manageExistingReservation(Application.RETURN_SUCCESS)).thenReturn(Application.RETURN_SUCCESS);
 
         ShowUpChoice showUpChoice = new ShowUpChoice();
         assertThat(showUpChoice.execute(new Scanner(System.in), new User(Application.STATE_CONNECTED)))
@@ -47,7 +45,6 @@ public class ShowUpChoiceTest {
     public void testShowUpChoiceWithExistingAbonnement() {
         reservationDAOMock.when(() -> ReservationDAO.getReservationFromCurrentDate(anyInt())).thenReturn(new Reservation());
         abonnementDAOMock.when(() -> AbonnementDAO.getAbonnementFromCurrentDate(anyInt())).thenReturn(new Abonnement(10, null, null, null, -1, -1));
-        showUpChoiceMock.when(() -> ShowUpChoice.manageExistingAbonnement(Application.RETURN_SUCCESS)).thenReturn(Application.RETURN_SUCCESS);
 
         ShowUpChoice showUpChoice = new ShowUpChoice();
         assertThat(showUpChoice.execute(new Scanner(System.in), new User(Application.STATE_CONNECTED)))

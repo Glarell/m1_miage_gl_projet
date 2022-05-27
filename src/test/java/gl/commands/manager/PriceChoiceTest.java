@@ -19,7 +19,6 @@ public class PriceChoiceTest {
     public void testChangePrice() {
         MockedStatic<VariableApplicationDAO> variableApplicationDAOMock = mockStatic(VariableApplicationDAO.class);
         variableApplicationDAOMock.when(() -> VariableApplicationDAO.getVariableApplicationByName(anyString())).thenReturn(new VariableApplication());
-        variableApplicationDAOMock.when(() -> VariableApplicationDAO.updateVariableApplicationValue(any(), anyInt())).then(x -> null);
 
         MockedStatic<Application> applicationMock = mockStatic(Application.class);
         applicationMock.when(() -> Application.askForIntegerLine("Saisir le nouveau montant :")).thenReturn(5);
