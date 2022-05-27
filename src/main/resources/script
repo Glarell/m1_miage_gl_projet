@@ -82,7 +82,8 @@ CREATE TABLE Abonnement
         CONSTRAINT FK_id_client_abonnement REFERENCES Client (id_client),
     id_borne         INTEGER NOT NULL
         CONSTRAINT FK_id_borne_abonnement REFERENCES Borne (id_borne),
-    prix             FLOAT CHECK ( prix >= 0 )
+    prix             FLOAT CHECK ( prix >= 0 ),
+    inProgress       BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE FUNCTION set_default_price_abonnement() RETURNS trigger AS
