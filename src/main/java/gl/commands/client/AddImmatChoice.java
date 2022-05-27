@@ -3,7 +3,9 @@ package gl.commands.client;
 import gl.application.Application;
 import gl.application.User;
 import gl.commands.ChoicesAbstract;
+import gl.database.dao.EstAssocieDAO;
 import gl.database.dao.PlaqueDAO;
+import gl.database.model.EstAssocie;
 
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -20,6 +22,8 @@ public class AddImmatChoice extends ChoicesAbstract {
         }
         try {
             PlaqueDAO.insertNewPlaque(plaque_id);
+            EstAssocie temp = new EstAssocie(Application.currentClient.getId_client(), plaque_id);
+            EstAssocieDAO.insertNewEstAssocie(temp);
             System.out.printf("La plaque d'immatriculation %s a été ajoutée !", plaque_id);
         } catch (SQLException exception) {
             exception.printStackTrace();

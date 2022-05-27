@@ -236,6 +236,7 @@ public class ReservationDAO {
         return result;
     }
 
+
     /**
      * Mise à jour d'une réservation après une fusion
      *

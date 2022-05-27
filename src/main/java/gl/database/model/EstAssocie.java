@@ -15,6 +15,9 @@ public class EstAssocie {
         this.id_plaque = id_plaque;
     }
 
+    public EstAssocie(boolean b, int id_client, String plaque_id) {
+    }
+
     public int getId_estAssocie() {
         return id_estAssocie;
     }
