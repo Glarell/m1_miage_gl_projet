@@ -14,7 +14,6 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,7 +24,7 @@ public class WithoutReservationChoice extends ChoicesAbstract {
         System.out.println("--- [ Recharger sans réserver ] ---");
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         Date date = new Date(System.currentTimeMillis());
-        Time endTime = getUserDataUtils.getFinIntervalle(formatter.format(date));
+        Time endTime = GetUserDataUtils.getFinIntervalle(formatter.format(date));
         Time startTime = new Time(date.getTime());
         List<Borne> bornes_dispos = BorneDAO.getAllBorneAtInstant(date, startTime, endTime);
         if (bornes_dispos.size() == 0) {

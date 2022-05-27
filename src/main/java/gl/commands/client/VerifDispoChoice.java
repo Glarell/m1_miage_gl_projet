@@ -63,9 +63,9 @@ public class VerifDispoChoice extends ChoicesAbstract {
     private Reservation initReservationValue() {
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         Reservation reservation = new Reservation();
-        reservation.setDate_reservation(getUserDataUtils.getDate());
-        reservation.setDebut_intervalle(getUserDataUtils.getDebutIntervalle(formatter.format(reservation.getDate_reservation())));
-        reservation.setFin_intervalle(getUserDataUtils.getFinIntervalle(formatter.format(reservation.getDate_reservation())));
+        reservation.setDate_reservation(GetUserDataUtils.getDate());
+        reservation.setDebut_intervalle(GetUserDataUtils.getDebutIntervalle(formatter.format(reservation.getDate_reservation())));
+        reservation.setFin_intervalle(GetUserDataUtils.getFinIntervalle(formatter.format(reservation.getDate_reservation())));
         reservation.setNb_prolongement(0);
         reservation.setSupplement(false);
         return reservation;
