@@ -5,7 +5,9 @@ import gl.application.User;
 import gl.database.dao.AbonnementDAO;
 import gl.database.dao.ClientDAO;
 import gl.database.model.Abonnement;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.util.Collections;
@@ -42,9 +44,6 @@ public class CreateContractChoiceTest {
     @Test
     public void testCreateContractWithIncorrectTime() {
         clientDAOMock.when(() -> ClientDAO.getNbReservationAndAbonnement(anyInt())).thenReturn(0);
-        applicationMock.when(() -> Application.askForLine("Saisir la date (dd-mm-yyyy) : ")).thenReturn("14-05-2022");
-        applicationMock.when(() -> Application.askForLine("Saisir l'intervalle de début (hh:mm) : ")).thenReturn("16:00");
-        applicationMock.when(() -> Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ")).thenReturn("15:00");
 
         CreateContractChoice createContractChoice = new CreateContractChoice();
         assertThat(createContractChoice.execute(new Scanner(System.in), new User(Application.STATE_CONNECTED)))
@@ -54,14 +53,6 @@ public class CreateContractChoiceTest {
     @Test
     public void testCreateContractWithExistingAbonnementAndDontMerge() {
         clientDAOMock.when(() -> ClientDAO.getNbReservationAndAbonnement(anyInt())).thenReturn(0);
-
-        applicationMock.when(() -> Application.askForLine("Saisir la date (dd-mm-yyyy) : ")).thenReturn("14-05-2022");
-        applicationMock.when(() -> Application.askForLine("Saisir l'intervalle de début (hh:mm) : ")).thenReturn("16:00");
-        applicationMock.when(() -> Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ")).thenReturn("17:00");
-
-        createContractChoiceMock.when(() -> CreateContractChoice.isIntervalInvalid(any(Abonnement.class))).thenReturn(false);
-        createContractChoiceMock.when(() -> CreateContractChoice.doesUserWantToMergeAbonnement(any(Abonnement.class))).thenReturn(false);
-
         abonnementDAOMock.when(() -> AbonnementDAO.hasExistingAbonnementFromSameUser(anyInt(), any())).thenReturn(true);
 
         CreateContractChoice createContractChoice = new CreateContractChoice();
@@ -72,14 +63,8 @@ public class CreateContractChoiceTest {
     @Test
     public void testCreateContractWithExistingAbonnementAndMerge() {
         clientDAOMock.when(() -> ClientDAO.getNbReservationAndAbonnement(anyInt())).thenReturn(0);
-
-        applicationMock.when(() -> Application.askForLine("Saisir la date (dd-mm-yyyy) : ")).thenReturn("14-05-2022");
-        applicationMock.when(() -> Application.askForLine("Saisir l'intervalle de début (hh:mm) : ")).thenReturn("16:00");
-        applicationMock.when(() -> Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ")).thenReturn("17:00");
-
         createContractChoiceMock.when(() -> CreateContractChoice.isIntervalInvalid(any(Abonnement.class))).thenReturn(false);
         createContractChoiceMock.when(() -> CreateContractChoice.doesUserWantToMergeAbonnement(any())).thenReturn(true);
-
         abonnementDAOMock.when(() -> AbonnementDAO.hasExistingAbonnementFromSameUser(anyInt(), any())).thenReturn(true);
 
         CreateContractChoice createContractChoice = new CreateContractChoice();
@@ -90,14 +75,8 @@ public class CreateContractChoiceTest {
     @Test
     public void testCreateContractWithInvalidBorne() {
         clientDAOMock.when(() -> ClientDAO.getNbReservationAndAbonnement(anyInt())).thenReturn(0);
-
-        applicationMock.when(() -> Application.askForLine("Saisir la date (dd-mm-yyyy) : ")).thenReturn("14-05-2022");
-        applicationMock.when(() -> Application.askForLine("Saisir l'intervalle de début (hh:mm) : ")).thenReturn("16:00");
-        applicationMock.when(() -> Application.askForLine("Saisir l'intervalle de fin (hh:mm) : ")).thenReturn("17:00");
-
         createContractChoiceMock.when(() -> CreateContractChoice.isIntervalInvalid(any(Abonnement.class))).thenReturn(false);
         createContractChoiceMock.when(() -> CreateContractChoice.getAllValidBorne(any(Abonnement.class))).thenReturn(Collections.emptyList());
-
         abonnementDAOMock.when(() -> AbonnementDAO.hasExistingAbonnementFromSameUser(anyInt(), any())).thenReturn(false);
 
         CreateContractChoice createContractChoice = new CreateContractChoice();

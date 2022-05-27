@@ -67,13 +67,13 @@ public class ModifReservationChoice extends ChoicesAbstract {
 
     public void modifDateReservation(int id) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-        Date date = getUserDataUtils.getDate();
-        Time int1 = getUserDataUtils.getDebutIntervalle(formatter.format(date));
-        Time int2 = getUserDataUtils.getFinIntervalle(formatter.format(date));
+        Date date = GetUserDataUtils.getDate();
+        Time int1 = GetUserDataUtils.getDebutIntervalle(formatter.format(date));
+        Time int2 = GetUserDataUtils.getFinIntervalle(formatter.format(date));
         while (int1.compareTo(int2) >= 0) {
             System.out.println("Les intervalles ne sont pas correctement renseignés");
-            int1 = getUserDataUtils.getDebutIntervalle(formatter.format(date));
-            int2 = getUserDataUtils.getFinIntervalle(formatter.format(date));
+            int1 = GetUserDataUtils.getDebutIntervalle(formatter.format(date));
+            int2 = GetUserDataUtils.getFinIntervalle(formatter.format(date));
         }
         ArrayList<Integer> bornes_dispos = (ArrayList<Integer>) BorneDAO.getAllBorneFromDateDispoUpdate(date, int1, int2, id);
         if (bornes_dispos.size() > 0) {

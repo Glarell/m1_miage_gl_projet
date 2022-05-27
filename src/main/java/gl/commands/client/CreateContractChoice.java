@@ -139,13 +139,13 @@ public class CreateContractChoice extends ChoicesAbstract {
      *
      * @return le nouvel abonnement
      */
-    public static Abonnement initAbonnementValue() {
+    private static Abonnement initAbonnementValue() {
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         Abonnement abonnement = new Abonnement();
 
-        abonnement.setDate_abonnement(getUserDataUtils.getDate());
-        abonnement.setDebut_intervalle(getUserDataUtils.getDebutIntervalle(formatter.format(abonnement.getDate_abonnement())));
-        abonnement.setFin_intervalle(getUserDataUtils.getFinIntervalle(formatter.format(abonnement.getDate_abonnement())));
+        abonnement.setDate_abonnement(GetUserDataUtils.getDate());
+        abonnement.setDebut_intervalle(GetUserDataUtils.getDebutIntervalle(formatter.format(abonnement.getDate_abonnement())));
+        abonnement.setFin_intervalle(GetUserDataUtils.getFinIntervalle(formatter.format(abonnement.getDate_abonnement())));
         abonnement.setId_client(Application.getCurrentClientId());
         return abonnement;
     }

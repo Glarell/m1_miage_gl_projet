@@ -9,11 +9,9 @@ import gl.database.dao.ReservationDAO;
 import gl.database.dao.VariableApplicationDAO;
 import gl.database.model.*;
 
-import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.time.LocalTime;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Scanner;
 
@@ -54,7 +52,7 @@ public class GoAwayChoice extends ChoicesAbstract {
      *
      * @return la réservation
      */
-    public static Reservation selectReservation() {
+    private static Reservation selectReservation() {
         List<Reservation> listOfReservation = ReservationDAO.getAllReservationInProgressByIdClient(Application.getCurrentClientId());
         System.out.println("Voici la ou les réservation(s) disponible(s) :");
         listOfReservation.forEach(reservation -> System.out.printf("-- reservation N°%s le %s sur l'intervalle : %s -> %s",
@@ -74,7 +72,7 @@ public class GoAwayChoice extends ChoicesAbstract {
      * @param numReservation    l'identifiant de la réservation recherchée
      * @return vrai s'il est présent
      */
-    public static boolean listOfReservationDoesntContainsId(List<Reservation> listOfReservation, int numReservation) {
+    private static boolean listOfReservationDoesntContainsId(List<Reservation> listOfReservation, int numReservation) {
         return listOfReservation.stream()
                 .noneMatch(reservation -> reservation.getId_reservation() == numReservation);
     }
@@ -86,7 +84,7 @@ public class GoAwayChoice extends ChoicesAbstract {
      * @param numReservation    l'identifiant de la réservation recherchée
      * @return la réservation selectionnée
      */
-    public static Reservation getReservationFromList(List<Reservation> listOfReservation, int numReservation) {
+    private static Reservation getReservationFromList(List<Reservation> listOfReservation, int numReservation) {
         return listOfReservation.stream()
                 .filter(reservation -> reservation.getId_reservation() == numReservation)
                 .findFirst()
@@ -98,7 +96,7 @@ public class GoAwayChoice extends ChoicesAbstract {
      *
      * @return l'abonnement
      */
-    public static Abonnement selectAbonnement() {
+    private static Abonnement selectAbonnement() {
         List<Abonnement> listOfAbonnement = AbonnementDAO.getAbonnementInProgressByClient(Application.getCurrentClientId());
         System.out.println("Voici le ou les abonnement(s) disponible(s) :");
         listOfAbonnement.forEach(abonnement -> System.out.printf("-- abonnement N°%s sur l'intervalle : %s -> %s",
@@ -118,7 +116,7 @@ public class GoAwayChoice extends ChoicesAbstract {
      * @param numAbonnement    l'identifiant de l'abonnement recherché
      * @return vrai s'il est présent
      */
-    public static boolean listOfAbonnementDoesntContainsId(List<Abonnement> listOfAbonnement, int numAbonnement) {
+    private static boolean listOfAbonnementDoesntContainsId(List<Abonnement> listOfAbonnement, int numAbonnement) {
         return listOfAbonnement.stream()
                 .noneMatch(abonnement -> abonnement.getId_abonnement() == numAbonnement);
     }
@@ -130,7 +128,7 @@ public class GoAwayChoice extends ChoicesAbstract {
      * @param numAbonnement    l'identifiant de l'abonnement recherché
      * @return l'abonnement selectionné
      */
-    public static Abonnement getAbonnementFromList(List<Abonnement> listOfAbonnement, int numAbonnement) {
+    private static Abonnement getAbonnementFromList(List<Abonnement> listOfAbonnement, int numAbonnement) {
         return listOfAbonnement.stream()
                 .filter(reservation -> reservation.getId_abonnement() == numAbonnement)
                 .findFirst()
@@ -142,7 +140,7 @@ public class GoAwayChoice extends ChoicesAbstract {
      *
      * @return la réservation
      */
-    public static Reservation getReservation() {
+    private static Reservation getReservation() {
         Reservation reservation = GoAwayChoice.selectReservation();
         try {
             ReservationDAO.updateDepartReservation(reservation);
@@ -158,7 +156,7 @@ public class GoAwayChoice extends ChoicesAbstract {
      *
      * @return l'abonnement
      */
-    public static Abonnement getAbonnement() {
+    private static Abonnement getAbonnement() {
         Abonnement abonnement = GoAwayChoice.selectAbonnement();
         try {
             AbonnementDAO.updateInProgressAbonnement(abonnement);
@@ -169,7 +167,7 @@ public class GoAwayChoice extends ChoicesAbstract {
         return AbonnementDAO.getAbonnementById(abonnement.getId_abonnement());
     }
 
-    public static void generateReservationCost(Reservation reservation) {
+    private static void generateReservationCost(Reservation reservation) {
         Time date_arrivee = reservation.getArrivee_client();
         Time date_depart = reservation.getDepart_client();
         Time intervalle_debut = reservation.getDebut_intervalle();
@@ -192,7 +190,7 @@ public class GoAwayChoice extends ChoicesAbstract {
         }
     }
 
-    public static void generateAbonnementCost(Abonnement abonnement) {
+    private static void generateAbonnementCost(Abonnement abonnement) {
         LocalTime date_depart = abonnement.getFin_intervalle().toLocalTime();
         Time intervalle_debut = abonnement.getDebut_intervalle();
         Time intervalle_fin = abonnement.getFin_intervalle();

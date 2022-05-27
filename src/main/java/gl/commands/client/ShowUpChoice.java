@@ -37,7 +37,7 @@ public class ShowUpChoice extends ChoicesAbstract {
      * @param res le retour de l'application
      * @return le retour de l'application
      */
-    private int manageExistingReservation(int res) {
+    private static int manageExistingReservation(int res) {
         Reservation reservation = ReservationDAO.getReservationFromCurrentDate(Application.getCurrentClientId());
         if (isBorneDisponible(reservation.getId_borne())) {
             try {
@@ -61,7 +61,7 @@ public class ShowUpChoice extends ChoicesAbstract {
      * @param res le retour de l'application
      * @return le retour de l'application
      */
-    private int manageExistingAbonnement(int res) {
+    private static int manageExistingAbonnement(int res) {
         Abonnement abonnement = AbonnementDAO.getAbonnementFromCurrentDate(Application.getCurrentClientId());
         if (isBorneDisponible(abonnement.getId_borne())) {
             try {
@@ -85,7 +85,7 @@ public class ShowUpChoice extends ChoicesAbstract {
      * @param id_borne l'identifiant de la borne
      * @return vrai si la borne n'est pas occupée par un autre utilisateur
      */
-    private boolean isBorneDisponible(int id_borne) {
+    private static boolean isBorneDisponible(int id_borne) {
         return BorneDAO.isBorneWithEtatBorne(id_borne, EtatBorne.STATE_AVAILABLE)
                 || BorneDAO.isBorneWithEtatBorne(id_borne, EtatBorne.STATE_RESERVED);
     }

@@ -7,7 +7,7 @@ import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-public class getUserDataUtils {
+public class GetUserDataUtils {
 
     public static Date getDate() {
         Date date_reservation = null;
