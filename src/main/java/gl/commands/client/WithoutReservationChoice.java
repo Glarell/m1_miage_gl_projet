@@ -44,7 +44,9 @@ public class WithoutReservationChoice extends ChoicesAbstract {
                 EstAssocie estAssocie = assocations.get(0);
                 Reservation reservation = new Reservation(date, startTime, endTime, 0, false, estAssocie.getId_estAssocie(), final_borne.getId_borne());
                 try{
-                    ReservationDAO.registrerReservation(reservation);
+                    int id_reserv = ReservationDAO.registrerReservation(reservation);
+                    reservation.setId_reservation(id_reserv);
+                    ReservationDAO.updateArriveeReservation(reservation);
                     BorneDAO.updateStateOfBorne(final_borne, "occupée");
                     System.out.println("Vous pouvez dorénavant recharger, veillez à signaler votre départ pour cette réservation");
                 }catch (SQLException e){
