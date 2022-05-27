@@ -9,6 +9,7 @@ import gl.commands.anonymous.InscriptionChoice;
 import gl.commands.client.*;
 import gl.commands.manager.ConsultAllProfilesChoice;
 import gl.commands.manager.DelayChoice;
+import gl.commands.manager.GererBorneIndisponible;
 import gl.commands.manager.PriceChoice;
 
 import java.util.HashMap;
@@ -61,13 +62,15 @@ public class Choices {
         choicesManager.put(1, "1 - Définir le délai d'attente");
         choicesManager.put(2, "2 - Définir le montant des frais supplémentaires");
         choicesManager.put(3, "3 - Consulter les profils des clients");
-        choicesManager.put(4, "4 - Me déconnecter");
-        choicesManager.put(5, "5 - Quitter l'application");
+        choicesManager.put(4, "4 - Gérer les bornes indisponibles");
+        choicesManager.put(5, "5 - Me déconnecter");
+        choicesManager.put(6, "6 - Quitter l'application");
         commandsManager.put(1, new DelayChoice());
         commandsManager.put(2, new PriceChoice());
         commandsManager.put(3, new ConsultAllProfilesChoice());
-        commandsManager.put(4, new DeconnectionChoice());
-        commandsManager.put(5, new QuitChoice());
+        commandsManager.put(4, new GererBorneIndisponible());
+        commandsManager.put(5, new DeconnectionChoice());
+        commandsManager.put(6, new QuitChoice());
     }
 
     public void display(int state) {
