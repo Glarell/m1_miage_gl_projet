@@ -9,6 +9,17 @@ import java.util.ArrayList;
 
 public class ReservationDAO {
 
+    public static double[] getReleveMensuel() throws SQLException {
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY,ResultSet.HOLD_CURSORS_OVER_COMMIT);
+        ResultSet res = stmt.executeQuery("select sum(prix),count(*) from reservation where (SELECT EXTRACT(MONTH FROM current_timestamp)=DATE_PART('month',date_reservation))");
+        res.first();
+        double[] array = new double[2];
+        array[0] = res.getInt(1);
+        array[1] = res.getInt(2);
+        return array;
+    }
+
     public static ArrayList<Reservation> getAllReservationByIdClient(int id_client) {
         ArrayList<Reservation> list = new ArrayList<>();
         Connection conn = ConnectionPostgre.getInstance().getConnection();
