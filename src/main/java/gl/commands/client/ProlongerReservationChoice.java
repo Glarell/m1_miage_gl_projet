@@ -19,11 +19,11 @@ public class ProlongerReservationChoice extends ChoicesAbstract {
     @Override
     public int execute(Scanner scanner, User user) {
         System.out.println("[------Prolonger ma réservation------]");
-        ArrayList<Reservation> list = ReservationDAO.getAllReservationByIdClient(Application.currentClient.getId_client());
+        ArrayList<Reservation> list = ReservationDAO.getAllReservationByIdClient(Application.getCurrentClientId());
         System.out.println(list.stream().map(Reservation::toString).reduce("\n", String::concat));
         if (list.size() == 0) {
             System.out.println("Aucune réservation...");
-            return Application.RETURN_SUCCESS;
+            return Application.RETURN_FAILED;
         }
         int id = Application.askForIntegerLine("Entrer l'identifiant de la réservation :");
         ArrayList<Integer> listOfId = (ArrayList<Integer>) list.stream().map(Reservation::getId_reservation).collect(Collectors.toList());
