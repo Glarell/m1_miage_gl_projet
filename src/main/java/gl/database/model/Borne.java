@@ -8,6 +8,11 @@ public class Borne {
     public Borne() {
     }
 
+    public Borne(int id_borne, String id_etatBorne){
+        this.id_borne = id_borne;
+        this.id_etatBorne = id_etatBorne;
+    }
+
     public Borne(int id_borne) {
         this.id_borne = id_borne;
     }

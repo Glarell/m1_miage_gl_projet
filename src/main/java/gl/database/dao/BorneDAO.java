@@ -3,9 +3,11 @@ package gl.database.dao;
 import gl.database.ConnectionPostgre;
 import gl.database.model.Borne;
 import gl.database.model.EtatBorne;
+import gl.database.model.VariableApplication;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class BorneDAO {
@@ -113,6 +115,59 @@ public class BorneDAO {
             e.printStackTrace();
         }
         return listOfBorneFromReservation;
+    }
+
+    /**
+     * Récupération d'une borne disponible à l'instant présent pour une réservation sur le moment
+     *
+     * @param date             la date de recherche
+     * @param debut_intervalle intervalle de début
+     * @param fin_intervalle   intervalle de fin
+     */
+    public static List<Borne> getAllBorneAtInstant(Date date, Time debut_intervalle, Time fin_intervalle) {
+        VariableApplication delay = VariableApplicationDAO.getVariableApplicationByName("délai attente");
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(debut_intervalle);
+        cal.add(Calendar.MINUTE, delay.getValeur());
+        System.out.println(cal.getTime());
+        Connection conn = ConnectionPostgre.getInstance().getConnection();
+        List<Borne> listOfBorneFromReservation = new ArrayList<>();
+        List<Borne> listOfBorneFromAbonnement = new ArrayList<>();
+        try {
+            PreparedStatement stmtReservation = conn.prepareStatement("SELECT * FROM Borne WHERE id_etatborne = 'disponible'" +
+                    "EXCEPT SELECT borne.id_borne, borne.id_etatborne FROM Borne inner join reservation r on borne.id_borne = r.id_borne where date_reservation = ? and not ((? > debut_intervalle and ? > debut_intervalle ) " +
+                    "or (? < debut_intervalle and ? < debut_intervalle))");
+            BorneDAO.getAttributesForDateDispo(stmtReservation, date, debut_intervalle, new Time(cal.getTimeInMillis()));
+            System.out.println(stmtReservation.toString());
+            ResultSet resReservation = stmtReservation.executeQuery();
+            while (resReservation.next()) {
+                listOfBorneFromReservation.add(new Borne(resReservation.getInt(1), resReservation.getString(2)));
+            }
+
+            PreparedStatement stmtAbonnement = conn.prepareStatement("SELECT * FROM Borne WHERE id_etatborne = 'disponible'" +
+                    "EXCEPT SELECT borne.id_borne, borne.id_etatborne FROM Borne INNER JOIN abonnement a on borne.id_borne = a.id_borne where date_abonnement = ? and not ((? > debut_intervalle and ? > debut_intervalle ) " +
+                    "or (? < debut_intervalle and ? < debut_intervalle))");
+            BorneDAO.getAttributesForDateDispo(stmtAbonnement, date, debut_intervalle, new Time(cal.getTimeInMillis()));
+            ResultSet resAbonnement = stmtAbonnement.executeQuery();
+            while (resAbonnement.next()) {
+                listOfBorneFromAbonnement.add(new Borne(resAbonnement.getInt(1), resAbonnement.getString(2)));
+            }
+            System.out.println(listOfBorneFromReservation.size());
+            System.out.println(listOfBorneFromAbonnement.size());
+            boolean condition = false;
+            List<Borne> final_bornes = new ArrayList<>();
+            for (Borne borne : listOfBorneFromAbonnement){
+                for (Borne borne1 : listOfBorneFromReservation){
+                    if (borne.getId_borne() == borne1.getId_borne()){
+                        final_bornes.add(borne);
+                    }
+                }
+            }
+            return final_bornes;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return List.of();
     }
 
     public static List<Integer> getAllBorneFromDateDispoUpdate(Date date, Time int1, Time int2, int id) {
