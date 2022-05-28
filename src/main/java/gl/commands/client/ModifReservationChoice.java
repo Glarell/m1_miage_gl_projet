@@ -20,14 +20,14 @@ public class ModifReservationChoice extends ChoicesAbstract {
 
     @Override
     public int execute(Scanner scanner, User user) {
-        List<Reservation> reservationList = ReservationDAO.getReservationByClientId(Application.currentClient.getId_client());
+        List<Reservation> reservationList = ReservationDAO.getReservationByClientId(Application.getCurrentClientId());
         HashMap<Integer, Reservation> indices = new HashMap<>();
         reservationList.forEach(x -> {
             indices.put(x.getId_reservation(), x);
             System.out.println(x.getId_reservation() + " : Date = " + x.getDate_reservation() + " Debut = " + x.getDebut_intervalle() + " Fin = " + x.getFin_intervalle());
         });
         if (indices.size() > 0) {
-            Integer choice = Application.askForIntegerLine("Veuiller saisir le numéro de la réservation que vous souhaitez modifier : ");
+            int choice = Application.askForIntegerLine("Veuiller saisir le numéro de la réservation que vous souhaitez modifier : ");
             while (indices.getOrDefault(choice, null) == null) {
                 choice = Application.askForIntegerLine("Aucune réservation avec ce numéro, veuillez ré-essayez");
             }
@@ -36,7 +36,7 @@ public class ModifReservationChoice extends ChoicesAbstract {
             System.out.println("2 - Modifier la date, le début et la fin de la réservation");
             System.out.println("3 - Modifier la plaque associée à la réservation");
             System.out.println("4 - Quitter ce menu");
-            Integer menu_choice = Application.askForIntegerLine("Veuillez saisir le numéro du choix que vous souhaitez effectuer : ");
+            int menu_choice = Application.askForIntegerLine("Veuillez saisir le numéro du choix que vous souhaitez effectuer : ");
             while (Map.of(1, 1, 2, 2, 3, 3, 4, 4).getOrDefault(menu_choice, null) == null) {
                 menu_choice = Application.askForIntegerLine("Ce choix n'existe pas, veuillez ré-essayez :");
             }
@@ -105,7 +105,7 @@ public class ModifReservationChoice extends ChoicesAbstract {
             if (VerifDispoChoice.isVoitureEmprunteOuLoue()) {
                 return EstAssocieDAO.getEstAssocieById(VerifDispoChoice.generateNewEstAssocieTemporaire());
             } else {
-                ArrayList<EstAssocie> estAssocies = (ArrayList<EstAssocie>) EstAssocieDAO.getEstAssocieByClient(Application.currentClient.getId_client());
+                ArrayList<EstAssocie> estAssocies = (ArrayList<EstAssocie>) EstAssocieDAO.getEstAssocieByClient(Application.getCurrentClientId());
                 if (estAssocies.size() > 0) {
                     System.out.println("Choissisez la plaque avec laquelle réserver :");
                     HashMap<String, EstAssocie> map = new HashMap<>();

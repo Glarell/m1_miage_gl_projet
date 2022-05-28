@@ -36,7 +36,7 @@ public class WithoutReservationChoice extends ChoicesAbstract {
             while (!plaque_choice.matches("[A-Z]{2}-\\d{3}-[A-Z]{2}")) {
                 plaque_choice = Application.askForLine("Mauvaise saisie !\nSaisir numéro d'immatriculation :");
             }
-            List<EstAssocie> assocations = EstAssocieDAO.getEstAssocieByClientAndPlaque(Application.currentClient.getId_client(), plaque_choice);
+            List<EstAssocie> assocations = EstAssocieDAO.getEstAssocieByClientAndPlaque(Application.getCurrentClientId(), plaque_choice);
             if (assocations.size() == 0){
                 System.out.println("Aucunes plaques pour ce client et ce numéro de plaque, association temporaire non permise sans réservation, veuillez revenir plus tard");
             }else{

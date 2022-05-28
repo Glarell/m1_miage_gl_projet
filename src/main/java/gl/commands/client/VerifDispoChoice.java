@@ -37,7 +37,7 @@ public class VerifDispoChoice extends ChoicesAbstract {
                 reservation.getDebut_intervalle(), reservation.getFin_intervalle());
 
         //Recherche d'une réservation existante
-        if (ReservationDAO.hasExistingReservationFromSameUser(Application.currentClient.getId_client(), reservation)) {
+        if (ReservationDAO.hasExistingReservationFromSameUser(Application.getCurrentClientId(), reservation)) {
             try {
                 return VerifDispoChoice.doesUserWantToMergeReservation(reservation) ? Application.RETURN_SUCCESS : Application.RETURN_FAILED;
             } catch (SQLException e) {
@@ -97,9 +97,9 @@ public class VerifDispoChoice extends ChoicesAbstract {
         //Ajout de la nouvelle plaque dans la BDD et de l'association temporaire
         try {
             PlaqueDAO.insertNewPlaque(plaque_id);
-            EstAssocie estAssocie = new EstAssocie(Application.currentClient.getId_client(), plaque_id);
+            EstAssocie estAssocie = new EstAssocie(Application.getCurrentClientId(), plaque_id);
             EstAssocieDAO.insertNewEstAssocieTemporaire(estAssocie);
-            new_id_estAssocie = EstAssocieDAO.getEstAssocieTemporaire(Application.currentClient.getId_client(), plaque_id).getId_estAssocie();
+            new_id_estAssocie = EstAssocieDAO.getEstAssocieTemporaire(Application.getCurrentClientId(), plaque_id).getId_estAssocie();
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -124,7 +124,7 @@ public class VerifDispoChoice extends ChoicesAbstract {
         boolean userDecision = doingMerge.equals("oui");
 
         if (userDecision) {
-            Reservation oldReservation = ReservationDAO.getExistingReservationFromSameUser(Application.currentClient.getId_client(), newReservation);
+            Reservation oldReservation = ReservationDAO.getExistingReservationFromSameUser(Application.getCurrentClientId(), newReservation);
             if (!(ReservationDAO.hasExistingReservation(newReservation.getDate_reservation(), oldReservation.getFin_intervalle(),
                     newReservation.getFin_intervalle(), oldReservation.getId_borne()))) {
                 ReservationDAO.updateMergeReservation(oldReservation, newReservation.getFin_intervalle());
@@ -163,11 +163,11 @@ public class VerifDispoChoice extends ChoicesAbstract {
                             condition.set(false);
                             reservation.setId_borne(choix);
                             //Réservation avec une voiture empruntée ou louée
-                            if (this.isVoitureEmprunteOuLoue()) {
+                            if (isVoitureEmprunteOuLoue()) {
                                 reservation.setId_estAssocie(generateNewEstAssocieTemporaire());
                                 this.generateNewReservation(reservation);
                             } else {
-                                ArrayList<EstAssocie> estAssocies = (ArrayList<EstAssocie>) EstAssocieDAO.getEstAssocieByClient(Application.currentClient.getId_client());
+                                ArrayList<EstAssocie> estAssocies = (ArrayList<EstAssocie>) EstAssocieDAO.getEstAssocieByClient(Application.getCurrentClientId());
                                 if (estAssocies.size() == 0) {
                                     return Application.RETURN_SUCCESS;
                                 } else {
